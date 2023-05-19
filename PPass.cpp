@@ -10,8 +10,27 @@
 #include <filesystem>
 #include <fstream>
 
-using std::cin, std::cout, std::endl;
+//Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
 
+/*
+for checking if string is empty and if yes i will write there a timestamp also timestamp will start with TSMP-{timestamp} in ordere like hh - mm - ss
+but i need ask if i store only 1 timestamp or more?
+and in case of wrong password i write same or jsut write wrong password;
+
+std::ifstream file("secret.txt"); // Open the file for reading
+    std::vector<std::string> lines; // Vector to store the lines
+
+    std::string line;
+    while (std::getline(file, line)) {
+        lines.push_back(line);
+    }
+
+    // Print the lines
+    for (const auto& line : lines) {
+        fmt::print("{}  isempty? {} \n", line, line.empty());
+    }
+    fmt::print("{}", lines.size());
+*/
 
 void placeMainFolder();
 
@@ -31,6 +50,52 @@ void isPasswordSafe();
 
 void createPassword();
 
+//done
+std::vector<int> time() {
+    std::time_t currentTime = std::time(nullptr);
+    std::tm localTime{};
+    localtime_s(&localTime, &currentTime);
+
+    int hours = localTime.tm_hour;
+    int minutes = localTime.tm_min;
+    int seconds = localTime.tm_sec;
+
+    std::vector<int> timeList = { hours, minutes, seconds };
+    return timeList;
+}
+
+
+//toFInish
+void wrtieTimestamp(std::string filename) {
+
+    // require a vector of dechipered lines or vector of empty lines where i can change smth and than change those lines
+    std::vector<int> currTime = time();
+
+}
+
+/*
+struktura
+"Hasło 1 na Google","password1","Internet","www.google.com","user1"
+then split i dodaje sobie do Password
+*/
+
+//DONE
+std::vector<std::string> split(const std::string& s, char delimiter) {
+
+    std::vector<std::string> tokens;
+
+    std::istringstream iss(s);
+
+    std::string token;
+
+    while (std::getline(iss, token, delimiter)) {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
+//DONE
 bool isDecrypted(std::string path, std::string password) {
 
     auto stream = std::fstream(path);
@@ -47,6 +112,12 @@ bool isDecrypted(std::string path, std::string password) {
     return false;
 }
 
+/*
+pytanie jeszcze otwarte czy zostawiam pole kategoriew klasie haslom czy robie inna klase dla tego 
+*/
+class Category {
+
+};
 
 class Password {
 private:
@@ -65,10 +136,11 @@ protected:
 
 PasswordPass::PasswordPass(std::string homeFolder, std::string directFile) : homeFolder(homeFolder), directFile(directFile) {}
 
+//unfinished
 PasswordPass PasswordPass::createAccount() {
     std::string path_str;
-    std::cout << "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ";
-    cin >> path_str;
+    fmt::print( "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ");
+    std::cin >> path_str;
     std::filesystem::path path_obj(path_str);
 
     if (std::filesystem::is_directory(path_obj)) {
@@ -85,16 +157,29 @@ PasswordPass PasswordPass::createAccount() {
     }
 }
 
+
+std::string correctPassword(std::string path, std::string errorMessage) {
+    std::string password;
+    do {
+        fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage);
+        std::cin >> password;
+    } while (!isDecrypted(path, password));
+
+    return password;
+}
+
+//DONE
 std::string correctPath(std::string errorMessage) {
     std::string path;
     do {
         fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage);
         std::cin >> path;
     } while (!std::filesystem::is_regular_file(path));
-    fmt::print(fmt::fg(fmt::color::green), "Great here you go with this path  {}", path);
+    //fmt::print(fmt::fg(fmt::color::green), "Great here you go with this path  {}", path+"\n");
     return path;
 }
 
+//DONE
 char inputAnswer(std::string errorMessage, char optionOne, char optionTwo) {
     char input = ' ';
     while (input != optionOne && input != optionTwo) {
@@ -121,15 +206,21 @@ PasswordPass PasswordPass::loginIntoAccount() {
 
         std::string password;
         fmt::print("Please provide me with a password to a file\n");
-        cin >> password;
+        std::cin >> password;
 
         bool dec = isDecrypted(path, password);
-        if (dec) {
-            fmt::print("yay");
+        //i need also to add here a decipher , like creating this ppass and adding a vector of all decyphered lines
+        if (!dec) {
+            std::string errMsg = "Please provide correct password unless you want to disintegrate your file\n";
+            password = correctPassword(path, errMsg);
         }
-        else {
-            fmt::print("fuck");
+
+        std::vector<std::string> decipheredList = decryptFile(path, password);
+
+        for (auto el : decipheredList) {
+            fmt::print("{}\n", el );
         }
+        
 
     }
     return PasswordPass("", path);
@@ -144,6 +235,11 @@ PasswordPass PasswordPass::launch() {
     if (input != 'L' && input != 'C') { input = inputAnswer(errorMessage, 'L', 'C'); }
     if (input == 'L') { return PasswordPass::loginIntoAccount(); }
     return PasswordPass::createAccount();
+}
+
+PasswordPass::~PasswordPass() {
+    // Destructor implementation
+    delete this;
 }
 
 //class PasswordPass {
@@ -182,11 +278,6 @@ PasswordPass PasswordPass::launch() {
 //		}
 //	}
 //};
-
-
-
-//add first line to a file like {#DECRYPTED#} i czytasz 1 linije jezeli ta  lnia nie jest taka to walish gowno z komputera
-
 
 //auto filename = "secret.txt";
 //auto key = "password";

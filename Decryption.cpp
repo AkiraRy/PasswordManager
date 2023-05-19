@@ -15,8 +15,8 @@ std::string decryptCaeser(const std::string message, const std::string key) {
     const std::string numSet = "0123456789";
     const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?";
 
-    std::cout << std::endl;
-    std::cout << "DECRYPTION: " << std::endl;
+    /*std::cout << std::endl;
+    std::cout << "DECRYPTION: " << std::endl;*/
     int c = 1;
     for (size_t i = 0; i < message.length(); i++)
     {       
@@ -30,11 +30,7 @@ std::string decryptCaeser(const std::string message, const std::string key) {
                     shiftedValue = lowSet.length() + shiftedValue;
                 }
 
-                decrypted += lowSet[shiftedValue % lowSet.length()];
-
-                
-
-                
+                decrypted += lowSet[shiftedValue % lowSet.length()];               
                 
             } 
             else {
@@ -84,6 +80,24 @@ std::string decryptCaeser(const std::string message, const std::string key) {
 
 }
 
+std::vector<std::string> decryptFile(const std::string filename, const std::string key) {
+    std::vector<std::string> decypheredList;
+    std::string line;
+    auto INstream = std::fstream(filename);
+    bool isFirstLine = true;
+
+    while (getline(INstream, line)) {\
+        if (isFirstLine) {
+            isFirstLine = false;
+            continue;  // Skip the first line
+        }
+        decypheredList.push_back(decryptCaeser(line, key));
+    }
+
+    return decypheredList;
+
+}
+
 /*
         // Create a password
         std::string createPass(bool caps, bool nums, bool symb,int length){
@@ -126,7 +140,7 @@ std::string decryptCaeser(const std::string message, const std::string key) {
 };
 */
 
-
+/*
 // OUTDATED
 std::string decrypt(std::string message, std::string key) {
     std::string result = "";
@@ -153,9 +167,10 @@ std::string decryptXOR(std::string & message, const std::string& key) {
     return message;
 
 }
-
+*/
 
 //TODO add 3 parameter to decryptFIle enum type to pick in which mode to decipher
+/*
 void decryptFile(const std::string& key) {
     
     auto filename = "secret.txt";
@@ -188,4 +203,4 @@ void decryptFile(const std::string& key) {
 
 
 }
-
+*/

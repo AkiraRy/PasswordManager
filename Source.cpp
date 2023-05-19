@@ -9,22 +9,27 @@
 #include "Encryption.h"
 #include <fmt/core.h>
 #include <fmt/color.h>
+#include <ctime>
+#include <iomanip>
 
+
+/*
+for folder chooser make something with parent dir of this proj, get list of directories ther and take one with secret
+*/
 
 
 using namespace std;
 
-
+// LXNCGIEPL for pass
 
 int main() {
-
 
     PasswordPass  ppass = PasswordPass::launch();
 
     /*string key = "pass";
 
 
-    std::string message = "DECRYPTED";*/
+    std::string message = "line1";*/
 
    //     //PasswordPass pass = PasswordPass::createAccount();
 
@@ -35,7 +40,7 @@ int main() {
 
    cout << message << endl;
    cout << encrypted_message << endl;
-   cout << decrypted_message << endl; */
+   cout << decrypted_message << endl;*/ 
 
     
 
