@@ -33,9 +33,7 @@ void createPassword();
 
 bool isDecrypted(std::string path, std::string password) {
 
-    auto stream = std::fstream(
-        path
-    );
+    auto stream = std::fstream(path);
     if (!stream.is_open()) {
         // Handle the error if the file couldn't be opened
         std::cerr << "Error opening file: " << path << std::endl;
@@ -47,7 +45,6 @@ bool isDecrypted(std::string path, std::string password) {
         return true;
     }
     return false;
-
 }
 
 
@@ -98,10 +95,10 @@ std::string correctPath(std::string errorMessage) {
     return path;
 }
 
-char inputAnswer(std::string errorMessage, char answerOne, char answerTwo) {
+char inputAnswer(std::string errorMessage, char optionOne, char optionTwo) {
     char input = ' ';
-    while (input != answerOne && input != answerTwo) {
-        fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage, answerOne, answerTwo);
+    while (input != optionOne && input != optionTwo) {
+        fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage, optionOne, optionTwo);
         std::cin >> input;
     }
     return input;
