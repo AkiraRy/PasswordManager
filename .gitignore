@@ -1,0 +1,6 @@
+fmt-10.0.0
+secrets
+x64
+*.vcxproj
+*.vcxproj.*
+secret.txt
