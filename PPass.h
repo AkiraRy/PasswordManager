@@ -16,7 +16,7 @@ private:
 private:
     /// \brief Private constructor to initialize the password list.
     /// \param list The list of decrypted passwords.
-    PasswordPass(std::string pathToFile, std::vector<std::string> other) : pathToFile(pathToFile), other(other) {}
+    PasswordPass(std::string pathToFile, std::vector<std::string> other);
 
 public:
     /// \brief Creates a new password manager account.
@@ -26,12 +26,9 @@ public:
     /// \brief Logs into an existing password manager account.
     /// \return The PasswordPass object representing the logged-in account.
     /// \sa createAccount(), launch()
-    static PasswordPass loginIntoAccount();
+    static PasswordPass* loginIntoAccount();
 
-    /// \brief Launches the password manager.
-    /// \return The PasswordPass object created from createAccount() and loginIntoAccount().
-    /// \sa createAccount(), loginIntoAccount()
-    static PasswordPass launch();
+    
 
     void setPasswordList(const std::vector<Password>& list) { passwordList = list; }
 
@@ -51,3 +48,8 @@ public:
     ~PasswordPass();
 };
 
+
+/// \brief Launches the password manager.
+/// \return The PasswordPass object created from createAccount() and loginIntoAccount().
+/// /// \sa createAccount(), loginIntoAccount()
+PasswordPass* launch();

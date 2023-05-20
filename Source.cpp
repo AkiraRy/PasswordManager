@@ -23,20 +23,23 @@ gugo2|haslo2|gmail
 
 
 int main() {
-    PasswordPass  ppass = PasswordPass::launch();
-    fmt::print("after launching");
-    fmt::print("path to a file {}\n", ppass.getPathToFile());
+    PasswordPass*  ppass = launch();
+    fmt::print("path to a file is {}\n", ppass->getPathToFile());
 
-    fmt::print("OTHERS\n\n");
-    for (const auto el : ppass.getOther()) {
+    /*fmt::print("OTHERS\n\n");
+    for (const auto el : ppass->getOther()) {
         fmt::print("{}\n", el);
+    }*/
+    
+    for (auto& el : ppass->getPasswordList()) {
+        std::cout << el.to_string() << std::endl;
     }
-    /*
-    fmt::print("PasswordList\n\n");
-    for (const auto el : ppass.getPasswordList()) {
+
+    /*fmt::print("PasswordList\n\n");
+    for (const auto el : ppass->getPasswordList()) {
         fmt::print("{}\n", el);
-    }
-    */
+    }*/
+    
 
 
     std::string key = "pass";

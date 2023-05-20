@@ -14,25 +14,8 @@
 #include <regex>
 //Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
 
-/*
-for checking if string is empty and if yes i will write there a timestamp also timestamp will start with TSMP-{timestamp} in ordere like hh - mm - ss
-but i need ask if i store only 1 timestamp or more?
-and in case of wrong password i write same or jsut write wrong password;
-
-std::ifstream file("secret.txt"); // Open the file for reading
-    std::vector<std::string> lines; // Vector to store the lines
-
-    std::string line;
-    while (std::getline(file, line)) {
-        lines.push_back(line);
-    }
-
-    // Print the lines
-    for (const auto& line : lines) {
-        fmt::print("{}  isempty? {} \n", line, line.empty());
-    }
-    fmt::print("{}", lines.size());
-*/
+PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other)
+    : pathToFile(pathToFile), other(other) {}
 
 void placeMainFolder();
 
@@ -52,91 +35,6 @@ void isPasswordSafe();
 
 void createPassword();
 
-/*
-bool containsSpecialCharacters(const std::string& str) {
-    std::regex pattern("\\\\(?![\\\"]|[nt])"); // all bad char for my code
-    return std::regex_search(str, pattern);
-}
-std::vector<int> time() {
-    std::time_t currentTime = std::time(nullptr);
-    std::tm localTime{};
-    localtime_s(&localTime, &currentTime);
-
-    int hours = localTime.tm_hour;
-    int minutes = localTime.tm_min;
-    int seconds = localTime.tm_sec;
-
-    std::vector<int> timeList = { hours, minutes, seconds };
-    return timeList;
-}
-
-void wrtieTimestamp(std::string filename) {
-    // require a vector of dechipered lines or vector of empty lines where i can change smth and than change those lines
-    std::vector<int> currTime = time();
-
-}
-*/
-/*
-struktura
-"Hasło 1 na Google","password1","Internet","www.google.com","user1"
-then split i dodaje sobie do Password
-*/
-
-/*
-std::vector<std::string> split(const std::string& s, char delimiter) {
-
-    std::vector<std::string> tokens;
-
-    std::istringstream iss(s);
-
-    std::string token;
-
-    while (std::getline(iss, token, delimiter)) {
-        tokens.push_back(token);
-    }
-
-    return tokens;
-}
-
-
-bool isDecrypted(std::string path, std::string password) {
-
-    auto stream = std::fstream(path);
-    if (!stream.is_open()) {
-        // Handle the error if the file couldn't be opened
-        fmt::print(fmt::fg(fmt::color::medium_violet_red), "Error opening file: \n");
-        return false;
-    }
-    std::string beggining;
-    getline(stream, beggining);
-    if (decryptCaeser(beggining, password) == "DECRYPTED") {
-        return true;
-    }
-    return false;
-}
-*/
-
-/*
-pytanie jeszcze otwarte czy zostawiam pole kategoriew klasie haslom czy robie inna klase dla tego 
-*/
-//class Category {
-//
-//};
-//
-//class Password {
-//private:
-//	std::string name;
-//	std::string text;
-//	std::string category;
-//	std::string website;
-//	std::string login;
-//	
-//protected:
-//	Password(std::string name, std::string text, std::string category, std::string website, std::string login) : 
-//		name(name), text(text), category(category), website(website), login(login) {};
-//	Password(std::string name, std::string text, std::string category) :
-//		name(name), text(text), category(category), website(""), login("") {};
-//};
 
 //unfinished
 void PasswordPass::createAccount() {
@@ -159,47 +57,12 @@ void PasswordPass::createAccount() {
     }
 }
 
-/*
-//Transfered
-std::string correctPassword(std::string path, std::string errorMessage) {
-    std::string password;
-    do {
-        fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage);
-        std::cin >> password;
-    } while (!isDecrypted(path, password));
-
-    return password;
-}
-
-//Transfered
-std::string correctPath(std::string errorMessage) {
-    std::string path;
-    do {
-        fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage);
-        std::cin >> path;
-    } while (!std::filesystem::is_regular_file(path));
-    //fmt::print(fmt::fg(fmt::color::green), "Great here you go with this path  {}", path+"\n");
-    return path;
-}
-
-//Transfered
-char inputAnswer(std::string errorMessage, char optionOne, char optionTwo) {
-    char input = ' ';
-    while (input != optionOne && input != optionTwo) {
-        fmt::print(fmt::fg(fmt::color::medium_violet_red), errorMessage, optionOne, optionTwo);
-        std::cin >> input;
-    }
-    return input;
-}
-
-*/
-
 //in order to have static construcors i do this shaet
-void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass ps) {
-    ps.setPasswordList(passwordList(dirt, delimite));
+void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass* ps) {
+    ps->setPasswordList(passwordList(dirt, delimite));
 }
 
-PasswordPass PasswordPass::loginIntoAccount() {
+PasswordPass* PasswordPass::loginIntoAccount() {
     fmt::print("Would you like to pick a file from current folder or give a path? [F/P]\n> ");
     std::string errorMessage = "Please type [{0}/{1}] not any other character [{0}/{1}]\n> ";
     char input; 
@@ -224,43 +87,29 @@ PasswordPass PasswordPass::loginIntoAccount() {
             std::string errMsg = "Please provide correct password unless you want to disintegrate your file\n";
             password = correctPassword(path, errMsg);
         }
-        //fmt::print("BEFORE\n");
+        
 
         std::vector<std::string> decipheredList = decryptFile(path, password);
 
-        /*for (auto el : decipheredList) {
-            fmt::print("{}\n", el);
-            
-        }*/
-        //std::string smth;
         std::vector<std::string> others = filter(decipheredList);
 
-        //fmt::print("AFTER\n");
-        /*for (auto el : decipheredList) {
-            fmt::print("{}\n", el);
-            
-        }*/
-        /*fmt::print("AND\n");
-        for (auto el : others) {
-            fmt::print("{}\n", el);
+       
+        PasswordPass* ppass = new PasswordPass(path, others);
+        setPassList(decipheredList, '|', ppass);
 
-        }*/      
-        PasswordPass ppass = PasswordPass(path, others);
-        fmt::print("path to a file {}\n", ppass.getPathToFile());
-
-        fmt::print("before setting\n");
-        //setPassList(decipheredList, '|', ppass);
-        fmt::print("after setting\n");
         return ppass;
+        
         
 
     }
-    std::vector<std::string> other;
-    return PasswordPass(path, other);
+    std::vector<std::string> other = {"smth"};
+    path = "see";
+
+    return nullptr;
 }
     
 
-PasswordPass PasswordPass::launch() {
+PasswordPass* launch() {
     fmt::print(  fmt::fg(fmt::color::snow), "\tHello to PPass aka PasswordPass\nWhould you like to login or create secret file?\n[L/C]\n> ");
     std::string errorMessage = "Pleas type [{0}/{1}] not any other character\n[{0}/{1}]\n> ";
     char input;
@@ -276,6 +125,26 @@ PasswordPass::~PasswordPass() {
     // Destructor implementation
     delete this;
 }
+
+/*
+for checking if string is empty and if yes i will write there a timestamp also timestamp will start with TSMP-{timestamp} in ordere like hh - mm - ss
+but i need ask if i store only 1 timestamp or more?
+and in case of wrong password i write same or jsut write wrong password;
+
+std::ifstream file("secret.txt"); // Open the file for reading
+    std::vector<std::string> lines; // Vector to store the lines
+
+    std::string line;
+    while (std::getline(file, line)) {
+        lines.push_back(line);
+    }
+
+    // Print the lines
+    for (const auto& line : lines) {
+        fmt::print("{}  isempty? {} \n", line, line.empty());
+    }
+    fmt::print("{}", lines.size());
+*/
 
 //class PasswordPass {
 //protected:
