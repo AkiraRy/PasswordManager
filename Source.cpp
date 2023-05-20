@@ -1,54 +1,50 @@
 #define FMT_HEADER_ONLY
 #include <iostream>
 #include <string>
-#include <fstream>
-#include <sstream>
 #include <vector>
 #include "PPass.h"
 #include "Decryption.h"
 #include "Encryption.h"
+#include "Utilities.h"
 #include <fmt/core.h>
 #include <fmt/color.h>
-#include <ctime>
-#include <iomanip>
 
 
 /*
 for folder chooser make something with parent dir of this proj, get list of directories ther and take one with secret
-*/
 
+DECRYPTED
+gugol|haslo1|gmail
+gugo2|haslo2|gmail
+
+*/
 
 using namespace std;
 
 // LXNCGIEPL for pass
 
+
+
 int main() {
+    //PasswordPass  ppass = PasswordPass::launch();
 
-    PasswordPass  ppass = PasswordPass::launch();
+    string key = "pass";
+    vector<string> decrypted = decryptFile("secret.txt", key);
 
-    /*string key = "pass";
+    for (auto el : decrypted) {
+        fmt::print("{}\n", el);
+    }
 
-
-    std::string message = "line1";*/
-
-   //     //PasswordPass pass = PasswordPass::createAccount();
-
-   ////cout << message.find('K') << endl;
-
-   /*string encrypted_message = encryptCaeser(message, key);
-   string decrypted_message = decryptCaeser(encrypted_message, key);
-
-   cout << message << endl;
-   cout << encrypted_message << endl;
-   cout << decrypted_message << endl;*/ 
-
+    //vector<string> oneLine = split(decrypted.at(0), '|');
     
+    /*int count = 0;
+    for (auto el : oneLine) {
+        if (count++ == 0) {
+            fmt::print("{}\n", el.erase(0,1));
+        }
+        fmt::print("{}\n", el);
+    }*/
 
-
-    
-
-
-    
     return 0;
 }
 

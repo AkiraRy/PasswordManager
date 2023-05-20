@@ -2,6 +2,8 @@
 #include "PPass.h"
 #include "Decryption.h"
 #include "Encryption.h"
+#include "Password.h"
+#include "Utilities.h"
 #include <fmt/core.h>
 #include <fmt/color.h>
 #include <iostream>
@@ -9,7 +11,7 @@
 #include <map>
 #include <filesystem>
 #include <fstream>
-
+#include <regex>
 //Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
 
 /*
@@ -45,12 +47,16 @@ void removeDirectory();
 void addCategory();
 
 void recordDecryption();
-
+    
 void isPasswordSafe();
 
 void createPassword();
 
-//done
+/*
+bool containsSpecialCharacters(const std::string& str) {
+    std::regex pattern("\\\\(?![\\\"]|[nt])"); // all bad char for my code
+    return std::regex_search(str, pattern);
+}
 std::vector<int> time() {
     std::time_t currentTime = std::time(nullptr);
     std::tm localTime{};
@@ -64,22 +70,19 @@ std::vector<int> time() {
     return timeList;
 }
 
-
-//toFInish
 void wrtieTimestamp(std::string filename) {
-
     // require a vector of dechipered lines or vector of empty lines where i can change smth and than change those lines
     std::vector<int> currTime = time();
 
 }
-
+*/
 /*
 struktura
 "Hasło 1 na Google","password1","Internet","www.google.com","user1"
 then split i dodaje sobie do Password
 */
 
-//DONE
+/*
 std::vector<std::string> split(const std::string& s, char delimiter) {
 
     std::vector<std::string> tokens;
@@ -95,13 +98,13 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
     return tokens;
 }
 
-//DONE
+
 bool isDecrypted(std::string path, std::string password) {
 
     auto stream = std::fstream(path);
     if (!stream.is_open()) {
         // Handle the error if the file couldn't be opened
-        std::cerr << "Error opening file: " << path << std::endl;
+        fmt::print(fmt::fg(fmt::color::medium_violet_red), "Error opening file: \n");
         return false;
     }
     std::string beggining;
@@ -111,33 +114,32 @@ bool isDecrypted(std::string path, std::string password) {
     }
     return false;
 }
+*/
 
 /*
 pytanie jeszcze otwarte czy zostawiam pole kategoriew klasie haslom czy robie inna klase dla tego 
 */
-class Category {
-
-};
-
-class Password {
-private:
-	std::string name;
-	std::string text;
-	std::string category;
-	std::string website;
-	std::string login;
-	
-protected:
-	Password(std::string name, std::string text, std::string category, std::string website, std::string login) : 
-		name(name), text(text), category(category), website(website), login(login) {};
-	Password(std::string name, std::string text, std::string category) :
-		name(name), text(text), category(category), website(""), login("") {};
-};
-
-PasswordPass::PasswordPass(std::string homeFolder, std::string directFile) : homeFolder(homeFolder), directFile(directFile) {}
+//class Category {
+//
+//};
+//
+//class Password {
+//private:
+//	std::string name;
+//	std::string text;
+//	std::string category;
+//	std::string website;
+//	std::string login;
+//	
+//protected:
+//	Password(std::string name, std::string text, std::string category, std::string website, std::string login) : 
+//		name(name), text(text), category(category), website(website), login(login) {};
+//	Password(std::string name, std::string text, std::string category) :
+//		name(name), text(text), category(category), website(""), login("") {};
+//};
 
 //unfinished
-PasswordPass PasswordPass::createAccount() {
+void PasswordPass::createAccount() {
     std::string path_str;
     fmt::print( "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ");
     std::cin >> path_str;
@@ -145,19 +147,20 @@ PasswordPass PasswordPass::createAccount() {
 
     if (std::filesystem::is_directory(path_obj)) {
         std::cout << "The path is a directory." << std::endl;
-        return PasswordPass(path_str, "");
+        //return PasswordPass();
     }
     else if (std::filesystem::is_regular_file(path_obj)) {
         std::cout << "The path is a regular file." << std::endl;
-        return PasswordPass("", path_str);
+        //return PasswordPass();
     }
     else {
         std::cout << "The path does not exist, Please make sure that given path is correct" << std::endl;
-        return PasswordPass("", "");
+        //return PasswordPass();
     }
 }
 
-
+/*
+//Transfered
 std::string correctPassword(std::string path, std::string errorMessage) {
     std::string password;
     do {
@@ -168,7 +171,7 @@ std::string correctPassword(std::string path, std::string errorMessage) {
     return password;
 }
 
-//DONE
+//Transfered
 std::string correctPath(std::string errorMessage) {
     std::string path;
     do {
@@ -179,7 +182,7 @@ std::string correctPath(std::string errorMessage) {
     return path;
 }
 
-//DONE
+//Transfered
 char inputAnswer(std::string errorMessage, char optionOne, char optionTwo) {
     char input = ' ';
     while (input != optionOne && input != optionTwo) {
@@ -188,6 +191,8 @@ char inputAnswer(std::string errorMessage, char optionOne, char optionTwo) {
     }
     return input;
 }
+
+*/
 
 PasswordPass PasswordPass::loginIntoAccount() {
     fmt::print("Would you like to pick a file from current folder or give a path? [F/P]\n> ");
@@ -218,12 +223,16 @@ PasswordPass PasswordPass::loginIntoAccount() {
         std::vector<std::string> decipheredList = decryptFile(path, password);
 
         for (auto el : decipheredList) {
-            fmt::print("{}\n", el );
+            fmt::print("{}\n", el);
+            if (el.at(0) == 'd') {
+                fmt::print("hi");
+            }
         }
         
 
     }
-    return PasswordPass("", path);
+    std::vector<Password> ps;
+    return PasswordPass(ps, path);
 }
     
 
@@ -234,7 +243,7 @@ PasswordPass PasswordPass::launch() {
     std::cin >> input;
     if (input != 'L' && input != 'C') { input = inputAnswer(errorMessage, 'L', 'C'); }
     if (input == 'L') { return PasswordPass::loginIntoAccount(); }
-    return PasswordPass::createAccount();
+    return  PasswordPass::loginIntoAccount();
 }
 
 PasswordPass::~PasswordPass() {

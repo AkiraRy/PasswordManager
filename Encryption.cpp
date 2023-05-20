@@ -15,9 +15,9 @@ std::string encryptCaeser(const std::string message, const std::string key) {
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
-    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
 
-    std::cout << "ENCRYPTION: " << std::endl;
+    /*std::cout << "ENCRYPTION: " << std::endl;*/
     for (size_t i = 0; i < message.length(); i++)
     {
         if (isalpha(message[i])) {
@@ -63,26 +63,7 @@ std::string encryptCaeser(const std::string message, const std::string key) {
 
 }
 
-
-//OUTDATED
-std::string encrypt(std::string message, std::string key) {
-    std::string result = "";
-
-    for (size_t i = 0; i < message.length(); i++)
-    {
-        int s = int(key[i % key.length()]);
-        if (isupper(message[i])) {
-
-            result += char(int(message[i] + s - 65) % 26 + 65);
-        }
-        else {
-            result += char(int(message[i] + s - 97) % 26 + 97);
-        }
-    }
-    return result;
-
-}
-
+//outdated
 std::string encryptXOR(std::string& message, const std::string& key) {
     std::cout << "Encryption of:" << std::endl;
     std::cout << message << std::endl;
@@ -92,24 +73,30 @@ std::string encryptXOR(std::string& message, const std::string& key) {
     return message;
 }
 
-void encryptFile(const std::string& filename, const std::string& key) {
+void encryptFile(const std::string filename, const std::string key) {
 
-    auto stream = std::fstream(
-        filename
-    );
+    auto INstream = std::fstream(filename);
+
     std::string line;
-    std::vector<std::string> clear;
+    
     std::vector<std::string> encrypted;
-    while (stream >> line) {
-        clear.push_back(line);
+    
+    while (getline(INstream, line)) {
+        encrypted.push_back(encryptCaeser(line, key));
     }
-    stream.close();
-    for (size_t i = 0; i < clear.size(); i++)
-    {
-        encrypted.push_back(encryptXOR(clear.at(i), key));
-    }
+    INstream.close();
 
-    std::fstream my_file(filename, std::ios::out);
+    
+    std::fstream OUTstream = std::fstream(filename);
+
+    if (OUTstream.is_open()) {
+        for (auto el : encrypted) {
+            OUTstream << el << std::endl;
+        }
+    }
+    OUTstream.close();
+
+    /*std::fstream OUTstream(filename, std::ios::out);
 
 
     for (auto& el : encrypted) {
@@ -117,4 +104,5 @@ void encryptFile(const std::string& filename, const std::string& key) {
     }
 
     my_file.close();
+    */
 }

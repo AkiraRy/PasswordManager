@@ -13,7 +13,7 @@ std::string decryptCaeser(const std::string message, const std::string key) {
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
-    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
 
     /*std::cout << std::endl;
     std::cout << "DECRYPTION: " << std::endl;*/
@@ -67,7 +67,7 @@ std::string decryptCaeser(const std::string message, const std::string key) {
 
             int shiftedValue = (valueOfCharacter - shift); // shifted NOT fixed postion of a number in a set
 
-            if (shiftedValue < 0) {
+            if (shiftedValue < 0) { // maybe here
                 shiftedValue = symSet.length() + shiftedValue;
             }
 
@@ -86,20 +86,20 @@ std::vector<std::string> decryptFile(const std::string filename, const std::stri
     auto INstream = std::fstream(filename);
     bool isFirstLine = true;
 
-    while (getline(INstream, line)) {\
+    while (getline(INstream, line)) {
         if (isFirstLine) {
             isFirstLine = false;
             continue;  // Skip the first line
         }
         decypheredList.push_back(decryptCaeser(line, key));
     }
-
+    INstream.close();
     return decypheredList;
-
 }
 
 /*
-        // Create a password
+        // Create a 
+
         std::string createPass(bool caps, bool nums, bool symb,int length){
             std::string password  = "";
 
