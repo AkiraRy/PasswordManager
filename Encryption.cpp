@@ -63,15 +63,7 @@ std::string encryptCaeser(const std::string message, const std::string key) {
 
 }
 
-//outdated
-std::string encryptXOR(std::string& message, const std::string& key) {
-    std::cout << "Encryption of:" << std::endl;
-    std::cout << message << std::endl;
-    for (size_t i = 0; i < message.length(); i++) {
-        message[i] ^= key[i % key.length()];
-    }
-    return message;
-}
+
 
 void encryptFile(const std::string filename, const std::string key) {
 
@@ -105,4 +97,13 @@ void encryptFile(const std::string filename, const std::string key) {
 
     my_file.close();
     */
+}
+//outdated
+std::string encryptXOR(std::string& message, const std::string& key) {
+    std::cout << "Encryption of:" << std::endl;
+    std::cout << message << std::endl;
+    for (size_t i = 0; i < message.length(); i++) {
+        message[i] ^= key[i % key.length()];
+    }
+    return message;
 }

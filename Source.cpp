@@ -18,23 +18,43 @@ gugol|haslo1|gmail
 gugo2|haslo2|gmail
 
 */
-
-using namespace std;
-
 // LXNCGIEPL for pass
 
 
 
 int main() {
-    //PasswordPass  ppass = PasswordPass::launch();
+    PasswordPass  ppass = PasswordPass::launch();
+    fmt::print("after launching");
+    fmt::print("path to a file {}\n", ppass.getPathToFile());
 
-    string key = "pass";
-    vector<string> decrypted = decryptFile("secret.txt", key);
-
-    for (auto el : decrypted) {
+    fmt::print("OTHERS\n\n");
+    for (const auto el : ppass.getOther()) {
         fmt::print("{}\n", el);
     }
+    /*
+    fmt::print("PasswordList\n\n");
+    for (const auto el : ppass.getPasswordList()) {
+        fmt::print("{}\n", el);
+    }
+    */
 
+
+    std::string key = "pass";
+
+    
+    
+    //encryptFile("secret.txt", key);
+    
+    /*vector<string> decrypted = decryptFile("secret.txt", key);
+
+    for (auto el : decrypted) {
+        vector<string> str = split(el, '|');
+        for (auto s : str) {
+            fmt::print("Pole {} ", s);
+        }
+        fmt::print("{} \n", str.size());
+    }*/
+    
     //vector<string> oneLine = split(decrypted.at(0), '|');
     
     /*int count = 0;

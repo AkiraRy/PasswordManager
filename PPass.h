@@ -10,12 +10,13 @@
 class PasswordPass {
 private:
     std::vector<Password> passwordList;
+    std::vector<std::string> other;
     std::string pathToFile;
 
 private:
     /// \brief Private constructor to initialize the password list.
     /// \param list The list of decrypted passwords.
-    PasswordPass(std::vector<Password> list, std::string pathToFile) : passwordList(list), pathToFile(pathToFile) {}
+    PasswordPass(std::string pathToFile, std::vector<std::string> other) : pathToFile(pathToFile), other(other) {}
 
 public:
     /// \brief Creates a new password manager account.
@@ -31,6 +32,21 @@ public:
     /// \return The PasswordPass object created from createAccount() and loginIntoAccount().
     /// \sa createAccount(), loginIntoAccount()
     static PasswordPass launch();
+
+    void setPasswordList(const std::vector<Password>& list) { passwordList = list; }
+
+    const std::vector<Password>& getPasswordList() const {
+        return passwordList;
+    }
+
+    const std::vector<std::string>& getOther() const {
+        return other;
+    }
+
+    const std::string& getPathToFile() const {
+        return pathToFile;
+    }
+
 
     ~PasswordPass();
 };

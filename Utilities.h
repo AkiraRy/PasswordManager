@@ -60,3 +60,8 @@ char inputAnswer(const std::string errorMessage, const char optionOne, const cha
 /// \param dirt - unprepared list of passwords
 /// \returns clear list of Passwords
 std::vector<Password> passwordList(const std::vector<std::string> dirt, const  char delimite);
+
+std::vector<std::string> filter(std::vector<std::string>& unfiltered);
+
+// make another fucntion for path and folder choosing also another method to choose file from a folder.
+//when pushing timestamp to a file divide it by 3, and by random for index in vector push it.

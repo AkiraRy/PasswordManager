@@ -11,9 +11,20 @@ class Password {
     std::string login;
 
 public:
-    Password(std::string name, std::string text, std::string category, std::string website, std::string login);
+    Password(std::string name, std::string text, std::string category, std::string website, std::string login) : name(name), text(text), category(category), website(website), login(login) {} 
 
-    // Getters
+
+    std::string to_string() const {
+        std::string result;
+        result += "Name: " + name + " ";
+        result += "Text: " + text + " ";
+        result += "Category: " + category + "  ";
+        result += "Website: " + website + " ";
+        result += "Login: " + login + " ";
+        return result;
+    }
+
+    // Getters maybe i dont need getter?
     std::string getName() const {
         return name;
     }

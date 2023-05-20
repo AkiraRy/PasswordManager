@@ -194,6 +194,11 @@ char inputAnswer(std::string errorMessage, char optionOne, char optionTwo) {
 
 */
 
+//in order to have static construcors i do this shaet
+void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass ps) {
+    ps.setPasswordList(passwordList(dirt, delimite));
+}
+
 PasswordPass PasswordPass::loginIntoAccount() {
     fmt::print("Would you like to pick a file from current folder or give a path? [F/P]\n> ");
     std::string errorMessage = "Please type [{0}/{1}] not any other character [{0}/{1}]\n> ";
@@ -214,25 +219,44 @@ PasswordPass PasswordPass::loginIntoAccount() {
         std::cin >> password;
 
         bool dec = isDecrypted(path, password);
-        //i need also to add here a decipher , like creating this ppass and adding a vector of all decyphered lines
+
         if (!dec) {
             std::string errMsg = "Please provide correct password unless you want to disintegrate your file\n";
             password = correctPassword(path, errMsg);
         }
+        //fmt::print("BEFORE\n");
 
         std::vector<std::string> decipheredList = decryptFile(path, password);
 
-        for (auto el : decipheredList) {
+        /*for (auto el : decipheredList) {
             fmt::print("{}\n", el);
-            if (el.at(0) == 'd') {
-                fmt::print("hi");
-            }
-        }
+            
+        }*/
+        //std::string smth;
+        std::vector<std::string> others = filter(decipheredList);
+
+        //fmt::print("AFTER\n");
+        /*for (auto el : decipheredList) {
+            fmt::print("{}\n", el);
+            
+        }*/
+        /*fmt::print("AND\n");
+        for (auto el : others) {
+            fmt::print("{}\n", el);
+
+        }*/      
+        PasswordPass ppass = PasswordPass(path, others);
+        fmt::print("path to a file {}\n", ppass.getPathToFile());
+
+        fmt::print("before setting\n");
+        //setPassList(decipheredList, '|', ppass);
+        fmt::print("after setting\n");
+        return ppass;
         
 
     }
-    std::vector<Password> ps;
-    return PasswordPass(ps, path);
+    std::vector<std::string> other;
+    return PasswordPass(path, other);
 }
     
 
@@ -242,7 +266,9 @@ PasswordPass PasswordPass::launch() {
     char input;
     std::cin >> input;
     if (input != 'L' && input != 'C') { input = inputAnswer(errorMessage, 'L', 'C'); }
-    if (input == 'L') { return PasswordPass::loginIntoAccount(); }
+    if (input == 'L') { 
+        return PasswordPass::loginIntoAccount(); 
+    }
     return  PasswordPass::loginIntoAccount();
 }
 
