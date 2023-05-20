@@ -112,8 +112,11 @@ std::vector<Password> passwordList(const std::vector<std::string> dirt,const  ch
     for (auto el : dirt) {
         if (el.length() > 0) { // jezeli to NIE linia pusta
             if (el.at(0) == 'd') { // 
+                el.erase(0, 1);
                 std::vector<std::string> str = split(el, '|');
                 if (str.size() != 5) { fmt::print(fmt::fg(fmt::color::medium_violet_red), "Provided password was not correct\n"); continue; }
+
+
 
                 Password ps = Password(str.at(0), str.at(1), str.at(2), str.at(3), str.at(4));
 

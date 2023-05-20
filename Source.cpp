@@ -13,6 +13,12 @@
 /*
 for folder chooser make something with parent dir of this proj, get list of directories ther and take one with secret
 
+add maybe namespace for already undentivible colors or so idk XD maybe like for errors
+typeid(...).name() - type
+when login by folder not path, check if folder is there (secret in 1 parent folder) if not say it to a user, and then he can choose to create, go by path or leave
+
+add maybe namespace for using eror message to not redefine them everywhere.
+
 DECRYPTED
 gugol|haslo1|gmail
 gugo2|haslo2|gmail
@@ -21,69 +27,49 @@ gugo2|haslo2|gmail
 // LXNCGIEPL for pass
 
 
-
+// i need to create a main function for functioning around and getting prompt from user
+/*
+i will make a menu like
+1 - find passwords
+2-..
+..
+*/
 int main() {
-    PasswordPass*  ppass = launch();
+    /*PasswordPass* ppass = launch();
     fmt::print("path to a file is {}\n", ppass->getPathToFile());
+    fmt::print("\n");
+    ppass->showPasswords();
+    fmt::print("after");
 
-    /*fmt::print("OTHERS\n\n");
-    for (const auto el : ppass->getOther()) {
-        fmt::print("{}\n", el);
-    }*/
-    
-    for (auto& el : ppass->getPasswordList()) {
-        std::cout << el.to_string() << std::endl;
+
+    std::string key = "pass";*/
+
+    //MODUL FOR CREATIN AN FOLDER IF DOESNT EXISTS
+    auto home = std::filesystem::current_path();
+    home = home.parent_path();
+    std::cout << home << std::endl;
+    auto dir_it = std::filesystem::directory_iterator(home);
+    bool presentedIs = true;
+    for (auto element : dir_it) {
+        if (element.path().filename() == "secret") {
+            fmt::print("good");
+            presentedIs = false;
+        }
+
+        std::cout << element.path().filename() << "\n";
     }
 
-    /*fmt::print("PasswordList\n\n");
-    for (const auto el : ppass->getPasswordList()) {
-        fmt::print("{}\n", el);
-    }*/
-    
-
-
-    std::string key = "pass";
-
-    
-    
-    //encryptFile("secret.txt", key);
-    
-    /*vector<string> decrypted = decryptFile("secret.txt", key);
-
-    for (auto el : decrypted) {
-        vector<string> str = split(el, '|');
-        for (auto s : str) {
-            fmt::print("Pole {} ", s);
+    if (presentedIs) {
+        fmt::print("here\n");
+        fmt::print("{}", home.append("secret1").string());
+        /*if (std::filesystem::create_directory(home.string() + "\\secret1")) {
+            std::cout << "Directory created successfully." << std::endl;
         }
-        fmt::print("{} \n", str.size());
-    }*/
+        else {
+            std::cout << "Failed to create directory." << std::endl;
+        }*/
+    }
+       
     
-    //vector<string> oneLine = split(decrypted.at(0), '|');
-    
-    /*int count = 0;
-    for (auto el : oneLine) {
-        if (count++ == 0) {
-            fmt::print("{}\n", el.erase(0,1));
-        }
-        fmt::print("{}\n", el);
-    }*/
-
     return 0;
 }
-
-/*pointers
-
-& - adress of
-* - pointer
-int *px = &x
-* by itslef the value pointed by
-
-if * used after = mean dword go to the pointed address and take the value 
-
-now px points to the value of x
-
-
-/
-*/
-// using special characters to mark start/end of kategory 
-// name of categories will cyphered with caeser

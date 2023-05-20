@@ -35,6 +35,11 @@ void isPasswordSafe();
 
 void createPassword();
 
+void PasswordPass::showPasswords() {
+    for (auto& el : this->getPasswordList()) {
+        std::cout << el.to_string() << std::endl;
+    }
+}
 
 //unfinished
 void PasswordPass::createAccount() {
@@ -62,6 +67,7 @@ void setPassList(const std::vector<std::string> dirt, const char delimite, Passw
     ps->setPasswordList(passwordList(dirt, delimite));
 }
 
+//DONE 60% finish folder way
 PasswordPass* PasswordPass::loginIntoAccount() {
     fmt::print("Would you like to pick a file from current folder or give a path? [F/P]\n> ");
     std::string errorMessage = "Please type [{0}/{1}] not any other character [{0}/{1}]\n> ";
@@ -102,6 +108,9 @@ PasswordPass* PasswordPass::loginIntoAccount() {
         
 
     }
+
+
+
     std::vector<std::string> other = {"smth"};
     path = "see";
 

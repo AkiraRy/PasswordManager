@@ -44,6 +44,8 @@ public:
         return pathToFile;
     }
 
+    void showPasswords();
+
 
     ~PasswordPass();
 };
