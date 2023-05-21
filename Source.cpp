@@ -34,9 +34,11 @@ i will make a menu like
 */
 int main() {
     PasswordPass* ppass = launch();
-    fmt::print("path to a file is '{}'\n", ppass->getPathToFile());
+    simulateApp(ppass);
+
+    /*fmt::print("path to a file is '{}'\n", ppass->getPathToFile());
     fmt::print("\n");
-    ppass->showPasswords();
+    ppass->showCategories();*/
     
 
 

@@ -19,6 +19,13 @@ namespace util {
 	extern const std::filesystem::path home;
 	extern const std::filesystem::path homeParent;
 	extern const std::filesystem::path secretFolder;
+
+	void mainMenu();
+	void searchMenu();
+	void sortMenu();
+	void addPasswordMenu();
+	void editPasswordMenu();
+	void delitPasswordMenu();
 }
 
 int rangeAnswer(int min, int max);

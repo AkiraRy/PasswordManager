@@ -28,11 +28,69 @@ namespace util {
     const std::filesystem::path homeParent = home.parent_path();
     const std::filesystem::path secretFolder = home.parent_path().append("secret");
 
+
+    void mainMenu() {
+        fmt::print(white, "\n\t\tWelcome To Main Menu, Choose One Of The Next Options\n");
+        fmt::print(white, "1 - search Passwords\n");
+        fmt::print(white, "2 - sort Passwords\n");
+        fmt::print(white, "3 - add Password\n");
+        fmt::print(white, "4 - edit Password\n");
+        fmt::print(white, "5 - delete Password(s)\n");
+        fmt::print(white, "6 - add categorn\n");
+        fmt::print(white, "7 - delete category\n");
+        fmt::print(white, "0 - quit the app\n\n");
+    }
+
+    void searchMenu() {
+        fmt::print(white, "\n\n\t\tYou Are In Search Menu, choose one of the next options\n");
+        fmt::print(white, "1 - search by category\n");
+        fmt::print(white, "2 - search by name\n")   ;
+        fmt::print(white, "3 - search by login\n");
+        fmt::print(white, "4 - search by website\n");
+        fmt::print(white, "5 - search by all optiions\n");
+        fmt::print(white, "0 - return to the main men\n\n");
+    }
+
+    void sortMenu() {
+        fmt::print(white, "\n\t\tYou Are In Menu, choose one of the next options:\n");
+        fmt::print(white, "1 - sort by category\n");
+        fmt::print(white, "2 - sort by name\n");
+        fmt::print(white, "3 - sort by website\n");
+        fmt::print(white, "4 - sort by login\n");
+        fmt::print(white, "5 - sort by more than 1 option\n");
+        fmt::print(white, "0 - return to the main app\n\n");
+    }
+
+    void addPasswordMenu() {
+        fmt::print(white, "\n\t\tYou Are In Add Password Menu, choose one of the next options:\n");
+        fmt::print(white, "Follow The Rules, If You Dont Want to mentioned a field place '-'\n");
+        fmt::print(white, "1 - to continue\n");
+        fmt::print(white, "0 - return to the main app\n\n");
+    }
+
+    void editPasswordMenu() {
+        fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
+        fmt::print(white, "Choose on how to find password to edit\n");
+        fmt::print(white, "1 - by category\n");
+        fmt::print(white, "2 - by name\n");
+        fmt::print(white, "3 - by category and then name\n");
+        fmt::print(white, "0 - return to the main app\n\n");
+    }
+
+    void delitPasswordMenu() {
+        fmt::print(white, "\n\t\tYou Are In Delit Password Menu, choose one of the next options:\n");
+        fmt::print(white, "Choose on how to find password to delete\n");
+        fmt::print(white, "1 - by category\n");
+        fmt::print(white, "2 - by name\n");
+        fmt::print(white, "3 - by category and then name\n");
+        fmt::print(white, "0 - return to the main app\n\n");
+    }
+
 }
 
 int rangeAnswer(int min, int max) {
     int option;
-    if (min <= 0) {
+    if (min < 0) {
         min = 1;
     }
     std::cin >> option;

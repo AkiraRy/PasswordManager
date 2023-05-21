@@ -29,6 +29,12 @@ private:
 
 
 public:
+    const std::map<std::string, std::vector<Password>>& getPasswordMap() const {
+        return passwordMap;
+    }
+
+
+    void searchPassword();
 
 
     // Function to populate the passwordMap based on passwordList categories
@@ -37,8 +43,7 @@ public:
     // Function to retrieve all categories available
     std::vector<std::string> getAllCategories() const;
 
-    // Function to retrieve passwords by category
-    const std::vector<Password>& getPasswordsByCategory(const std::string& category) const;
+    void showCategories();
 
 
     /// \brief Creates a new password manager account.
@@ -72,8 +77,18 @@ public:
     ~PasswordPass();
 };
 
+// Function to retrieve passwords by category
+std::vector<Password> getPasswordsByCategory(const std::map<std::string, std::vector<Password>>& passwordMap, const std::string& category);
+
+
+void simulateApp(PasswordPass*& ppass);
+
 
 /// \brief Launches the password manager.
 /// \return The PasswordPass object created from createAccount() and loginIntoAccount().
 /// \sa createAccount(), loginIntoAccount()
 PasswordPass* launch();
+
+std::vector<Password> byName(const std::vector<Password> vec, const std::string name);
+
+void quit(PasswordPass*& passwordManager);

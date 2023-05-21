@@ -12,19 +12,146 @@
 #include <filesystem>
 #include <fstream>
 #include <regex>
+
+// i ended up on searching function, please fix this getPasswordsBy categegory thank you;
+//maybe divide seacrhTemplate into 2 chunks 1 for category 1 for other stuff
+
+
+enum class SearchOption {
+    ByName,
+    ByCategory
+};
+
 //Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
 
 // maybe try to place if in logniwithPath for handling login from both folder and path, but in folder ver path is already provdided
 
 
+void simulateApp(PasswordPass*& ppass) {
+    int option = -1;
+    do {
+        util::mainMenu();
+        option = rangeAnswer(0, 7);
+        switch (option) {
+            case 0:
+                quit(ppass);
+                break;
+            case 1:
+                ppass->searchPassword();
+                break;
+
+        }
+
+    } while (option != 0);
+    
+}
+
+
+void PasswordPass::searchPassword() {
+    int option = -1;
+
+    do {
+        util::searchMenu();
+        option = rangeAnswer(0, 5);
+
+        switch (option) {
+            case 0:
+                break;
+            case 1: {
+                std::string category;
+                fmt::print(util::white, "\nPlease provide me with a category for password to be founded in\n ");
+                std::cin >> category;
+                std::vector<Password> categorySearch = getPasswordsByCategory(category);
+                if (categorySearch.empty()) { fmt::print(util::error, "No passwords for '{}'", category); }
+                fmt::print(util::white, "\nThese passwords i found by category {}\n", category);
+                for (auto el : categorySearch) {
+                    fmt::print(util::white, "{}\n", el.to_string());
+                }
+                break;
+            }
+            case 2: {
+                std::string name;
+                fmt::print(util::white, "\nPlease provide me with a name for password to be founded\n ");
+                std::cin >> name;
+                std::vector<Password> nameSearch = byName(passwordList, name);
+
+                if (nameSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", name); }
+
+                fmt::print(util::white, "\nThese passwords i found by name {}\n", name);
+                for (auto el : nameSearch) {
+                    fmt::print(util::white, "{}\n", el.to_string());
+                }
+                break;
+            }
+            case 3: {
+                std::string login;
+                fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n ");
+                std::cin >> login;
+                std::vector<Password> loginSearch = getPasswordsByCategory(login);
+                if (loginSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", login); }
+                fmt::print(util::white, "\nThese passwords i found by category {}\n", login);
+                for (auto el : loginSearch) {
+                    fmt::print(util::white, "{}\n", el.to_string());
+                }
+                break;
+            }
+            case 4:
+                break;
+            case 5:
+                break;
+            default:
+                fmt::print(util::white, "Invalid choice. In searchPassword() option : {}\n", option);
+                break;
+
+
+        }
+    } while (option != 0);
+}
+
+//dodatu enum
+void searchTemplate(std::string type, SearchOption so, std::vector<Password> vec) {
+    std::string input; // name or category
+    fmt::print(util::white, "\nPlease provide me with a {} for password to be founded in\n ", type);
+    std::cin >> input;
+    std::vector<Password> typeSearch;
+
+    switch (so) {
+        case SearchOption::ByName: {
+            typeSearch = byName(vec, input);
+            break;
+        }
+        case SearchOption::ByCategory:  {
+            typeSearch = 
+        }
+    }
+
+    if (typeSearch.empty()) { 
+        fmt::print(util::error, "No passwords for '{}'", input); 
+        return; 
+    }
+    fmt::print(util::white, "\nThese passwords i found by {}:  {}\n", type, input);
+    for (auto el : typeSearch) {
+        fmt::print(util::white, "{}\n", el.to_string());
+    }
+
+}
+
+std::vector<Password> byName(const std::vector<Password> vec,const std::string name) {
+
+    std::vector<Password> found;
+
+    for (const auto el : vec) {
+        if (name == el.getName()) {
+            found.push_back(el);
+        }
+    }
+    return found;
+}
+
 PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other)
     : pathToFile(pathToFile), other(other) {}
 
 /*
-void placeMainFolder();
-
-void findPassword();
-
 void sortPasswords();
 
 void changePassword();
@@ -36,8 +163,25 @@ void addCategory();
 void isPasswordSafe();
 
 void createPassword();
+
+void PasswordPass::searchPassword() {
+
+}
+
 */
 
+
+//call it at the end
+void quit(PasswordPass*& passwordManager) {
+    // ALSO ADD HERE WRITE TO FILE TO SAVE ALL CHANGES.
+
+    // Delete the PasswordPass object
+    delete passwordManager;
+
+    std::cout << "Goodbye!\n";
+
+    
+}
 
 void PasswordPass::populatePasswordMap() {
     passwordMap.clear(); // Clear the map before populating it
@@ -58,7 +202,7 @@ std::vector<std::string> PasswordPass::getAllCategories() const {
     return categories;
 }
 
-const std::vector<Password>& PasswordPass::getPasswordsByCategory(const std::string& category) const {
+std::vector<Password> getPasswordsByCategory(const std::map<std::string, std::vector<Password>>& passwordMap, const std::string& category) {
     static const std::vector<Password> emptyPasswords; // Empty vector to return if category not found
 
     auto it = passwordMap.find(category);
@@ -69,6 +213,11 @@ const std::vector<Password>& PasswordPass::getPasswordsByCategory(const std::str
     return emptyPasswords; // returns nothing if there is no such category
 }
 
+void PasswordPass::showCategories() {
+    for (auto el : this->getAllCategories() ) {
+        std::cout << el << std::endl;
+    }
+}
 
 void PasswordPass::showPasswords() {
     for (auto& el : this->getPasswordList()) {
@@ -76,7 +225,7 @@ void PasswordPass::showPasswords() {
     }
 }
 
-//unfinished
+//unfinished and not sure if needed(for additional point maybe)
 void PasswordPass::createAccount() {
     std::string path_str;
     fmt::print( "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ");
@@ -97,7 +246,6 @@ void PasswordPass::createAccount() {
     }
 }
 
-//in order to have static construcors i do this shaet
 void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass* ps) {
     ps->setPasswordList(passwordList(dirt, delimite));
 }
@@ -182,7 +330,8 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
 
     PasswordPass* ppass = new PasswordPass(path, others);
     setPassList(decipheredList, '|', ppass);
-
+    ppass->populatePasswordMap();
+    fmt::print(util::white, "\nLoged successfully pleasant useю\n");
     return ppass;
 }
 
@@ -199,6 +348,9 @@ PasswordPass* launch() {
 
 PasswordPass::~PasswordPass() {
     // Destructor implementation
+    //not usre if i need to clean after those 2 containers
+    delete &passwordList;
+    delete &passwordMap;
     delete this;
 }
 
