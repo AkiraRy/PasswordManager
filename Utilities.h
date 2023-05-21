@@ -9,6 +9,30 @@
 #include <filesystem>
 #include "Password.h"
 
+
+namespace util {
+	extern const fmt::text_style white;
+	extern const fmt::text_style error;
+	extern const std::string wrongOption;
+	extern const std::string errorPath;
+	extern const std::string errorPass;
+	extern const std::filesystem::path home;
+	extern const std::filesystem::path homeParent;
+	extern const std::filesystem::path secretFolder;
+}
+
+int rangeAnswer(int min, int max);
+
+void showFiles(const std::vector<std::string>& files);
+
+std::vector<std::string> allSecrets();
+
+/// \brief Checks if there is a foldeer with secret files
+///
+/// \param str - message
+/// \returns bool
+bool secretFolderIS();
+
 /// \brief Checks if a string has special Characters 
 ///
 /// \param str - message
@@ -41,19 +65,18 @@ bool isDecrypted(const std::string path, const  std::string password);
 /// \param path - path to a file
 /// \param errorMessage - message to printout in case of wrong password
 /// \returns correct password	
-std::string correctPassword(const std::string path, const  std::string errorMessage);
+std::string correctPassword(const std::string path);
 
 /// \brief Waits for correctPath to be provided
 ///
 /// \param errorMessage - message to printout in case of wrong password
 /// \returns correct path to a file
-std::string correctPath(const std::string errorMessage);
+std::string correctPath(std::string previousPATH);
 
 /// \brief Waits for correctPath to be provided
 ///
-/// \param errorMessage - message to printout in case of wrong password
 /// \returns correct path to a file
-char inputAnswer(const std::string errorMessage, const char optionOne, const char optionTwo);
+char inputAnswer( const char optionOne, const char optionTwo);
 
 /// \brief Makes an list type of Password
 ///
