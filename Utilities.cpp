@@ -276,4 +276,3 @@ std::vector<std::string> filter(std::vector<std::string>& unfiltered) {
 
     return other;
 }
-// w inszomu misci de vywolam paswordlist tam maju oczustutu stringa wid wsyakoi hyjni

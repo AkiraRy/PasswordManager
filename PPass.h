@@ -4,6 +4,12 @@
 #include <map>
 #include "Password.h"
 
+enum class SearchOption {
+    ByName,
+    ByCategory,
+    ByLogin,
+    ByWebSite,
+};
 
 /// \class PasswordPass
 /// \brief Object with decrypted passwords
@@ -29,6 +35,12 @@ private:
 
 
 public:
+
+
+    // Function to retrieve passwords by category
+    std::vector<Password> getPasswordsByCategory(const std::string& category);
+
+
     const std::map<std::string, std::vector<Password>>& getPasswordMap() const {
         return passwordMap;
     }
@@ -77,10 +89,6 @@ public:
     ~PasswordPass();
 };
 
-// Function to retrieve passwords by category
-std::vector<Password> getPasswordsByCategory(const std::map<std::string, std::vector<Password>>& passwordMap, const std::string& category);
-
-
 void simulateApp(PasswordPass*& ppass);
 
 
@@ -89,6 +97,6 @@ void simulateApp(PasswordPass*& ppass);
 /// \sa createAccount(), loginIntoAccount()
 PasswordPass* launch();
 
-std::vector<Password> byName(const std::vector<Password> vec, const std::string name);
+std::vector<Password> byAttribute(const std::vector<Password> vec, const std::string nameOfAttribute, const SearchOption so);
 
 void quit(PasswordPass*& passwordManager);

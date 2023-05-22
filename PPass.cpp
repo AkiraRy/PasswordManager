@@ -17,11 +17,6 @@
 //maybe divide seacrhTemplate into 2 chunks 1 for category 1 for other stuff
 
 
-enum class SearchOption {
-    ByName,
-    ByCategory
-};
-
 //Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
 
 // maybe try to place if in logniwithPath for handling login from both folder and path, but in folder ver path is already provdided
@@ -46,6 +41,8 @@ void simulateApp(PasswordPass*& ppass) {
     
 }
 
+
+//DONE YEHEHHEI
 
 void PasswordPass::searchPassword() {
     int option = -1;
@@ -73,9 +70,9 @@ void PasswordPass::searchPassword() {
                 std::string name;
                 fmt::print(util::white, "\nPlease provide me with a name for password to be founded\n ");
                 std::cin >> name;
-                std::vector<Password> nameSearch = byName(passwordList, name);
+                std::vector<Password> nameSearch = byAttribute(passwordList, name, SearchOption::ByName);
 
-                if (nameSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", name); }
+                if (nameSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", name); break; }
 
                 fmt::print(util::white, "\nThese passwords i found by name {}\n", name);
                 for (auto el : nameSearch) {
@@ -87,64 +84,158 @@ void PasswordPass::searchPassword() {
                 std::string login;
                 fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n ");
                 std::cin >> login;
-                std::vector<Password> loginSearch = getPasswordsByCategory(login);
-                if (loginSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", login); }
+
+                std::vector<Password> loginSearch = byAttribute(passwordList, login, SearchOption::ByLogin);
+
+                if (loginSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", login); break; }
+
                 fmt::print(util::white, "\nThese passwords i found by category {}\n", login);
                 for (auto el : loginSearch) {
                     fmt::print(util::white, "{}\n", el.to_string());
                 }
                 break;
             }
-            case 4:
+            case 4: {
+                std::string webSite;
+                fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n ");
+                std::cin >> webSite;
+
+                std::vector<Password> websiteSearch = byAttribute(passwordList, webSite, SearchOption::ByWebSite);
+
+                if (websiteSearch.empty()) { fmt::print(util::error, "No passwords for '{}'", webSite); break; }
+
+                fmt::print(util::white, "\nThese passwords i found by category {}\n", webSite);
+                for (auto el : websiteSearch) {
+                    fmt::print(util::white, "{}\n", el.to_string());
+                }
+            }
                 break;
-            case 5:
+            case 5: {
+                std::string category = "";
+                fmt::print(util::white, "\nPlease provide me with an information for every field\nIf you don`t want this field to be included place '-'\n ");
+                fmt::print(util::white, "\nGive me category for this password\n ");
+                std::cin >> category;
+
+                std::string name = "";
+                fmt::print(util::white, "\nGive me name for this password\n ");
+                std::cin >> name;
+
+                std::string login = "";
+                fmt::print(util::white, "\nGive me login for this password\n ");
+                std::cin >> login;
+
+                std::string website = "";
+                fmt::print(util::white, "\nGive me website for this password\n ");
+                std::cin >> website;
+
+                
+
+
+                std::vector<Password> passwords;
+                //fmt::print(util::white, "\nFor parameters \nCategory: {}\nName: {}\nLogin: {}\nWebSite: {}\n We founded this/those passwords:\n", category, name, login, website);
+
+                //std::cout << "\nFor parameters \nCategory: " << category << "\nName: " << name << "\nLogin: " << login << "\nWebSite: " << website << "\n We founded this/those passwords:\n";
+
+
+                if (category.at(0) != '-') {
+
+                    passwords = getPasswordsByCategory(category);
+
+                    if (name.at(0) != '-' && passwords.size() > 1 ) {
+                        passwords = byAttribute(passwords, name, SearchOption::ByName);
+                    }
+
+                    if (login.at(0) != '-' && passwords.size() > 1) {
+                        passwords = byAttribute(passwords, login, SearchOption::ByLogin);
+
+                    }
+
+                    if (website.at(0) != '-' && passwords.size() > 1) {
+                        passwords = byAttribute(passwords, website, SearchOption::ByWebSite);
+
+                    }
+                    
+
+                } else if (name.at(0) != '-') {
+                    passwords = byAttribute(passwordList, name, SearchOption::ByName);
+
+                    if (login.at(0) != '-' && passwords.size() > 1) {
+                        passwords = byAttribute(passwords, login, SearchOption::ByLogin);
+
+                    }
+
+                    if (website.at(0) != '-' && passwords.size() > 1) {
+                        passwords = byAttribute(passwords, website, SearchOption::ByWebSite);
+
+                    }
+
+                }
+                else if (login.at(0) != '-') {
+                    passwords = byAttribute(passwordList, login, SearchOption::ByLogin);
+
+                    if (website.at(0) != '-' && passwords.size() > 1) {
+                        passwords = byAttribute(passwords, website, SearchOption::ByWebSite);
+
+                    }
+                }
+                else if (website.at(0) != '-') {
+                    passwords = byAttribute(passwordList, website, SearchOption::ByWebSite);
+                } else {
+                    fmt::print(util::white, "\nNo fields were provided\n");
+                    break;
+                }
+
+                fmt::print(util::white, "\nFor parameters \nCategory: {}\nName: {}\nLogin: {}\nWebSite: {}\n We founded this/those passwords:\n", category, name, login, website);
+
+                for (auto el : passwords) {
+                    fmt::print(util::white, "\n{}", el.to_string());
+                }
+
+            }
                 break;
             default:
                 fmt::print(util::white, "Invalid choice. In searchPassword() option : {}\n", option);
                 break;
 
-
         }
     } while (option != 0);
 }
 
-//dodatu enum
-void searchTemplate(std::string type, SearchOption so, std::vector<Password> vec) {
-    std::string input; // name or category
-    fmt::print(util::white, "\nPlease provide me with a {} for password to be founded in\n ", type);
-    std::cin >> input;
-    std::vector<Password> typeSearch;
 
-    switch (so) {
-        case SearchOption::ByName: {
-            typeSearch = byName(vec, input);
-            break;
-        }
-        case SearchOption::ByCategory:  {
-            typeSearch = 
-        }
-    }
-
-    if (typeSearch.empty()) { 
-        fmt::print(util::error, "No passwords for '{}'", input); 
-        return; 
-    }
-    fmt::print(util::white, "\nThese passwords i found by {}:  {}\n", type, input);
-    for (auto el : typeSearch) {
-        fmt::print(util::white, "{}\n", el.to_string());
-    }
-
-}
-
-std::vector<Password> byName(const std::vector<Password> vec,const std::string name) {
+std::vector<Password> byAttribute(const std::vector<Password> vec,const std::string nameOfAttribute, const SearchOption so) {
 
     std::vector<Password> found;
 
-    for (const auto el : vec) {
-        if (name == el.getName()) {
-            found.push_back(el);
+
+    switch (so) {
+        case SearchOption::ByName: {
+                for (const auto el : vec) {
+                    if (nameOfAttribute == el.getName()) {
+                        found.push_back(el);
+                    }
+                }
+                break;
+        }
+        case SearchOption::ByLogin: {
+            for (const auto el : vec) {
+                if (nameOfAttribute == el.getLogin()) {
+                    found.push_back(el);
+                }
+            }
+            break;
+        }
+        case SearchOption::ByWebSite: {
+            for (const auto el : vec) {
+                if (nameOfAttribute == el.getWebsite()) {
+                    found.push_back(el);
+                }
+            }
+            break;
         }
     }
+
+
+    
     return found;
 }
 
@@ -163,10 +254,6 @@ void addCategory();
 void isPasswordSafe();
 
 void createPassword();
-
-void PasswordPass::searchPassword() {
-
-}
 
 */
 
@@ -202,7 +289,7 @@ std::vector<std::string> PasswordPass::getAllCategories() const {
     return categories;
 }
 
-std::vector<Password> getPasswordsByCategory(const std::map<std::string, std::vector<Password>>& passwordMap, const std::string& category) {
+std::vector<Password> PasswordPass::getPasswordsByCategory(const std::string& category) {
     static const std::vector<Password> emptyPasswords; // Empty vector to return if category not found
 
     auto it = passwordMap.find(category);

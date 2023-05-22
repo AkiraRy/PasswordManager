@@ -11,6 +11,8 @@
 
 
 /*
+*
+* 
 * make prefix t  for timestamp and in decryption-en== to not check those lines since all lines starts with d
 * 
 for folder chooser make something with parent dir of this proj, get list of directories ther and take one with secret
@@ -34,13 +36,14 @@ i will make a menu like
 */
 int main() {
     PasswordPass* ppass = launch();
+    //ppass->showCategories();
     simulateApp(ppass);
 
     /*fmt::print("path to a file is '{}'\n", ppass->getPathToFile());
     fmt::print("\n");
     ppass->showCategories();*/
     
-
+    //encryptFile("secret.txt", "pass");
 
     //std::string key = "pass";
     //fmt::print(util::white, " This is my message ");
