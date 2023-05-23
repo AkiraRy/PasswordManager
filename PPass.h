@@ -36,6 +36,17 @@ private:
 
 public:
 
+    void changePassword();
+
+    void removeDirectory();
+
+    void addCategory();
+
+
+    void addPassword();
+
+    void sortPasswords();
+
 
     // Function to retrieve passwords by category
     std::vector<Password> getPasswordsByCategory(const std::string& category);
@@ -100,3 +111,5 @@ PasswordPass* launch();
 std::vector<Password> byAttribute(const std::vector<Password> vec, const std::string nameOfAttribute, const SearchOption so);
 
 void quit(PasswordPass*& passwordManager);
+
+bool isPasswordPopular(const std::string& password);

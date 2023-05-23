@@ -13,13 +13,10 @@
 #include <fstream>
 #include <regex>
 
-// i ended up on searching function, please fix this getPasswordsBy categegory thank you;
-//maybe divide seacrhTemplate into 2 chunks 1 for category 1 for other stuff
 
 
 //Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
 
-// maybe try to place if in logniwithPath for handling login from both folder and path, but in folder ver path is already provdided
 
 
 void simulateApp(PasswordPass*& ppass) {
@@ -34,6 +31,9 @@ void simulateApp(PasswordPass*& ppass) {
             case 1:
                 ppass->searchPassword();
                 break;
+            case 2:
+                ppass->sortPasswords();
+                break;
 
         }
 
@@ -42,7 +42,11 @@ void simulateApp(PasswordPass*& ppass) {
 }
 
 
-//DONE YEHEHHEI
+
+void PasswordPass::sortPasswords() {
+
+}
+
 
 void PasswordPass::searchPassword() {
     int option = -1;
@@ -242,20 +246,88 @@ std::vector<Password> byAttribute(const std::vector<Password> vec,const std::str
 PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other)
     : pathToFile(pathToFile), other(other) {}
 
-/*
-void sortPasswords();
 
-void changePassword();
 
-void removeDirectory();
+void PasswordPass::changePassword() {
 
-void addCategory();
+}
+
+void PasswordPass::removeDirectory() {
+
+}
+
+void PasswordPass::addCategory() {
+
+}
     
-void isPasswordSafe();
 
-void createPassword();
 
-*/
+void PasswordPass::addPassword() {
+    int option = -1;
+
+    do {
+        util::addPasswordMenu();
+        option = rangeAnswer(0, 5);
+
+        switch (option) {
+        case 0:
+            break;
+        case 1: 
+            break;
+ 
+        default:
+            fmt::print(util::white, "Invalid choice. In searchPassword() option : {}\n", option);
+            break;
+
+        }
+    } while (option != 0);
+
+}
+
+//tutaj jest potrzeba w assetach bez nich blad wywali
+bool isPasswordPopular(const std::string& password) {
+
+    std::string line;
+
+    auto stream = std::fstream("rockyou.txt");
+
+    bool popular = false;
+    int i = 0;
+    while (getline(stream, line)) {
+        if (password == line) {
+            popular = true;
+            break;
+        }
+    }
+
+    return popular;
+
+}
+
+bool isPasswordSafe(const std::string& password) {
+    if (password.length() < 8) {
+        return false;
+
+    }
+
+    bool hasUppercase = false;
+    bool hasLowercase = false;
+    bool hasDigit = false;
+
+    for (char ch : password) {
+        if (std::isupper(ch)) {
+            hasUppercase = true;
+        }
+        else if (std::islower(ch)) {
+            hasLowercase = true;
+        }
+        else if (std::isdigit(ch)) {
+            hasDigit = true;
+        }
+    }
+
+    return hasUppercase && hasLowercase && hasDigit;
+}
 
 
 //call it at the end
@@ -312,7 +384,7 @@ void PasswordPass::showPasswords() {
     }
 }
 
-//unfinished and not sure if needed(for additional point maybe)
+//unfinished and not sure if needed
 void PasswordPass::createAccount() {
     std::string path_str;
     fmt::print( "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ");

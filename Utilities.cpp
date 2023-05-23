@@ -14,7 +14,7 @@
 #include <filesystem>
 #include <cctype>
 #include <algorithm>
-
+#include <random>
 
 namespace util {
     const fmt::text_style white = fmt::fg(fmt::color::snow);
@@ -87,6 +87,34 @@ namespace util {
     }
 
 }
+
+std::string generateRandomPassword(int length, bool includeUppercase, bool includeLowercase, bool includeSpecialChars) {
+    const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
+    const std::string numSet = "0123456789";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
+
+    std::string charset;
+    if (includeUppercase)
+        charset += capSet;
+    if (includeLowercase)
+        charset += lowSet;
+    if (includeSpecialChars)
+        charset += symSet;
+    charset += numSet;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::shuffle(charset.begin(), charset.end(), gen);
+
+    std::string password;
+    for (int i = 0; i < length; ++i) {
+        password += charset[gen() % charset.length()];
+    }
+
+    return password;
+}
+
 
 int rangeAnswer(int min, int max) {
     int option;

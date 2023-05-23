@@ -28,6 +28,8 @@ namespace util {
 	void delitPasswordMenu();
 }
 
+std::string generateRandomPassword(int length, bool includeUppercase, bool includeLowercase, bool includeSpecialChars);
+
 int rangeAnswer(int min, int max);
 
 void showFiles(const std::vector<std::string>& files);
@@ -93,5 +95,4 @@ std::vector<Password> passwordList(const std::vector<std::string> dirt, const  c
 
 std::vector<std::string> filter(std::vector<std::string>& unfiltered);
 
-// make another fucntion for path and folder choosing also another method to choose file from a folder.
 //when pushing timestamp to a file divide it by 3, and by random for index in vector push it.
