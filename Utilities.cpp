@@ -3,6 +3,7 @@
 #include "Decryption.h"
 #include "Encryption.h"
 #include "Password.h"
+#include "PPass.h"
 #include <regex>
 #include <string>
 #include <vector>
@@ -18,12 +19,14 @@
 
 namespace util {
     const fmt::text_style white = fmt::fg(fmt::color::snow);
-    const fmt::text_style error = fmt::fg(fmt::color::medium_violet_red);
-    const std::string pFault = "Provided password was not correct\n";
-    const std::string wrongOption = "Please type [{0}/{1}] not any other character [{0}/{1}]\n> ";
-    const std::string wrongRange = "Please type numbe in a range [{0}-{1}] not any other number [{0}-{1}]\n> ";
-    const std::string errorPath = "Provided path: '{}' is not a correct path to a file\n";
-    const std::string errorPass = "Please provide correct password unless you want to disintegrate your file\n";
+    const fmt::text_style error = fmt::fg(fmt::color::pale_violet_red);
+    const std::string pFault = "\nProvided password was not correct\n";
+    const std::string Fault = "\nProvided {} was not correct\n";
+    const std::string cFault = "\nProvided category was not correct\n";
+    const std::string wrongOption = "\nPlease type [{0}/{1}] not any other character [{0}/{1}]\n> ";
+    const std::string wrongRange = "\nPlease type numbe in a range [{0}-{1}] not any other number [{0}-{1}]\n> ";
+    const std::string errorPath = "\nProvided path: '{}' is not a correct path to a file\n";
+    const std::string errorPass = "\nPlease provide correct password unless you want to disintegrate your file\n";
     const std::filesystem::path home = std::filesystem::current_path();
     const std::filesystem::path homeParent = home.parent_path();
     const std::filesystem::path secretFolder = home.parent_path().append("secret");
@@ -36,7 +39,7 @@ namespace util {
         fmt::print(white, "3 - add Password\n");
         fmt::print(white, "4 - edit Password\n");
         fmt::print(white, "5 - delete Password(s)\n");
-        fmt::print(white, "6 - add categorn\n");
+        fmt::print(white, "6 - add category\n");
         fmt::print(white, "7 - delete category\n");
         fmt::print(white, "0 - quit the app\n\n");
     }
@@ -63,23 +66,30 @@ namespace util {
 
     void addPasswordMenu() {
         fmt::print(white, "\n\t\tYou Are In Add Password Menu, choose one of the next options:\n");
-        fmt::print(white, "Follow The Rules, If You Dont Want to mentioned a field place '-'\n");
-        fmt::print(white, "1 - to continue\n");
+        fmt::print(white, "\nFollow The Rules, If You Dont Want to mentioned a field place '-'\n");
+        fmt::print(white, "1 - create your own\n");
+        fmt::print(white, "2 - generate\n");
+        fmt::print(white, "0 - return to the main app\n\n");
+    }
+
+    void addCategoryMenu() {
+        fmt::print(white, "\n\t\tYou Are In Add Category Menu, choose one of the next options:\n");
+        fmt::print(white, "1 - proceed\n");
         fmt::print(white, "0 - return to the main app\n\n");
     }
 
     void editPasswordMenu() {
         fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
-        fmt::print(white, "Choose on how to find password to edit\n");
+        fmt::print(white, "\nChoose on how to find password to edit\n");
         fmt::print(white, "1 - by category\n");
         fmt::print(white, "2 - by name\n");
         fmt::print(white, "3 - by category and then name\n");
         fmt::print(white, "0 - return to the main app\n\n");
     }
 
-    void delitPasswordMenu() {
+    void deletePasswordMenu() {
         fmt::print(white, "\n\t\tYou Are In Delit Password Menu, choose one of the next options:\n");
-        fmt::print(white, "Choose on how to find password to delete\n");
+        fmt::print(white, "\nChoose on how to find password to delete\n");
         fmt::print(white, "1 - by category\n");
         fmt::print(white, "2 - by name\n");
         fmt::print(white, "3 - by category and then name\n");
@@ -88,17 +98,65 @@ namespace util {
 
 }
 
-std::string generateRandomPassword(int length, bool includeUppercase, bool includeLowercase, bool includeSpecialChars) {
+std::string PasswordPass::uniqueCategory() {
+    std::string category;
+    std::vector<std::string> currentCategories = getAllCategories();
+
+    bool exists;
+    do {
+        exists = false;
+
+        fmt::print(util::white, "\nProvide a name for a category: ");
+        std::cin >> category;
+
+        for (const auto& el : currentCategories) {
+            if (el == category) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (exists) {
+            fmt::print(util::error, "\nCategory '{}' already exists. Please choose a different name.\n", category);
+        }
+    } while (exists);
+
+    return category;
+}
+
+
+int readNumber() {
+    std::string input;
+    int number;
+
+    while (true) {
+        std::cout << "\nEnter a number: ";
+        std::cin >> input;
+        std::stringstream ss(input);
+        if (ss >> number && ss.eof()) {
+            // Input is a valid number
+            break;
+        }
+        else {
+            fmt::print(util::error, "Invalid input. Please enter a valid number.\n");
+        }
+    }
+
+    return number;
+}
+
+
+std::string generateRandomPassword(int length, bool includeUppercase, bool includeSpecialChars) {
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
     const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
 
     std::string charset;
+    //default
+    charset += lowSet;
     if (includeUppercase)
         charset += capSet;
-    if (includeLowercase)
-        charset += lowSet;
     if (includeSpecialChars)
         charset += symSet;
     charset += numSet;
@@ -117,16 +175,28 @@ std::string generateRandomPassword(int length, bool includeUppercase, bool inclu
 
 
 int rangeAnswer(int min, int max) {
-    int option;
+
+
+    char option;
     if (min < 0) {
         min = 1;
     }
     std::cin >> option;
-    while (!(option >= min && option <= max)) {
-        fmt::print(util::error, util::wrongRange, min, max);
-        std::cin >> option;
+
+    int value;
+
+    if (!isdigit(option)) {
+        value = readNumber();
     }
-    return option;
+    else {
+        value = option - '0';
+    }
+
+    while (!(value >= min && value <= max)) {
+        fmt::print(util::error, util::wrongRange, min, max);
+        std::cin >> value;
+    }
+    return value;
 }
 
 void showFiles(const std::vector<std::string>& files) {

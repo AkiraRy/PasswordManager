@@ -23,7 +23,7 @@ void simulateApp(PasswordPass*& ppass) {
     int option = -1;
     do {
         util::mainMenu();
-        option = rangeAnswer(0, 7);
+        option = rangeAnswer(0, 8);
         switch (option) {
             case 0:
                 quit(ppass);
@@ -34,11 +34,36 @@ void simulateApp(PasswordPass*& ppass) {
             case 2:
                 ppass->sortPasswords();
                 break;
+            case 3:
+                ppass->addPassword();
+                break;
+            case 4:
+                ppass->editPassword();
+                break;
+            case 5:
+                ppass->deletePassword();
+                break;
+            case 6:
+                ppass->addCategory();
+                break;
+            case 7:
+                ppass->deleteCategory();
+                break;
+            case 8:
+                ppass->showCategories();
+                break;
+            default:
+                break;
+
 
         }
 
     } while (option != 0);
     
+}
+
+void PasswordPass::deletePassword() {
+
 }
 
 
@@ -248,43 +273,193 @@ PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> othe
 
 
 
-void PasswordPass::changePassword() {
+void PasswordPass::editPassword() {
 
 }
 
-void PasswordPass::removeDirectory() {
+void PasswordPass::deleteCategory() {
+
 
 }
 
 void PasswordPass::addCategory() {
+    int option = -1;
 
+    do {
+        util::addCategoryMenu();
+        option = rangeAnswer(0, 1);
+
+        switch (option) {
+        case 0:
+            break;
+        case 1: {
+            std::string category = uniqueCategory();
+
+            fmt::print(util::white, "\nCreated a category: {}\n", category);
+
+
+            passwordMap.insert(std::make_pair(category, std::vector<Password>()));
+
+            
+        }
+              break;
+        }
+    } while (option != 0);
 }
-    
 
+
+    
 
 void PasswordPass::addPassword() {
     int option = -1;
 
     do {
         util::addPasswordMenu();
-        option = rangeAnswer(0, 5);
+        option = rangeAnswer(0, 2);
 
         switch (option) {
         case 0:
             break;
-        case 1: 
+        case 1: {
+            // {name, category, website, login}
+            std::vector<std::string> data = templatePassword();
+
+            std::string password = inputType("password");
+
+            bool isSafe = isPasswordSafe(password);
+            bool isPopular = isPasswordPopular(password);
+            bool used = usedBefore(password);
+
+
+            fmt::print((isSafe?util::white : util::error), "\nYour password is {}", (isSafe ? "safe\n" : "not safe\n"));
+            fmt::print((isPopular ? util::error : util::white), "\nYour password is {}", (isPopular ? "popular\n" : "not popular\n"));
+            fmt::print((used ? util::error : util::white), "\nYour password was {}", (used ? "used\n" : "not used\n"));
+
+
+            char answer;
+            fmt::print(util::white, "\nAre you sure you want to leave this passwords [y,N]");
+            answer = inputAnswer('y', 'N');
+            
+            if (answer == 'y') {
+                Password ps = Password(data.at(0), password, data.at(1), data.at(2), data.at(3));
+                passwordList.push_back(ps);
+                passwordMap[data.at(1)].push_back(ps);
+
+            } 
+
+        }
+              break;
+        case 2: {
+
+            // {name, category, website, login}
+            std::vector<std::string> data = templatePassword();
+            std::string password;
+
+            
+            fmt::print(util::white, "\nNow you prompt to autogenerate your password\nGive me length of it\n> ");
+            int length = rangeAnswer(8, 40);
+
+            fmt::print(util::white, "\ndoes it have UPPERCASE ?\n [y, N]> ");
+            char uppercase = inputAnswer('y', 'N');
+
+            fmt::print(util::white, "\ndoes it have $YMB0|$ ?\n> [y,N]");
+            char symbols = inputAnswer('y', 'N');
+
+            char answer;
+
+            do {
+                password = generateRandomPassword(length, (uppercase == 'y'? true:false), (symbols == 'y' ? true : false) );
+
+                fmt::print(util::white, "Your password is {}\n", password);
+
+                passwordStatistics(password);
+
+                fmt::print(util::white, "\nRegenerate Password? [y,N]");
+                answer = inputAnswer('y', 'N');
+
+                //apparantly input answer needs to be fixed first try is white second is red
+
+            } while (answer != 'N');
+
+           
+            fmt::print(util::white, "\nAre you sure you want to create this password [y,N]");
+            answer = inputAnswer('y', 'N');
+            
+
+            if (answer == 'y') {
+                Password ps = Password(data.at(0), password, data.at(1), data.at(2), data.at(3));
+                passwordList.push_back(ps);
+                passwordMap[data.at(1)].push_back(ps);
+
+            }
+
+        }
             break;
- 
+
         default:
             fmt::print(util::white, "Invalid choice. In searchPassword() option : {}\n", option);
             break;
 
         }
     } while (option != 0);
+}
+
+void PasswordPass::passwordStatistics(const std::string password) {
+    bool isSafe = isPasswordSafe(password);
+    bool isPopular = isPasswordPopular(password);
+    bool used = usedBefore(password);
+
+
+    fmt::print((isSafe ? util::white : util::error), "\nYour password is {}", (isSafe ? "safe\n" : "not safe\n"));
+    fmt::print((isPopular ? util::error : util::white), "\nYour password is {}", (isPopular ? "popular\n" : "not popular\n"));
+    fmt::print((used ? util::error : util::white), "\nYour password was {}", (used ? "used\n" : "not used\n"));
 
 }
 
-//tutaj jest potrzeba w assetach bez nich blad wywali
+bool PasswordPass::usedBefore(const std::string password) {
+
+    bool used = false;
+
+    for (const auto &el : passwordList) {
+        if (el.getText() == password) {
+            used = true;
+            break;
+        }
+    }
+    return used;
+
+}
+
+
+std::vector<std::string> templatePassword() {
+    fmt::print(util::white, "\nYou must provide me with at least name and category for password:\n");
+
+    std::string name;
+    std::string login;
+    std::string website;
+    std::string category;
+
+    category = inputType("category");
+    name = inputType("name");
+    login = inputType("login");
+    website = inputType("website");
+
+    return {name, category, website, login};
+}
+
+std::string inputType(std::string type) {
+    fmt::print(util::white, "\nGive me {} for password:\n ", type);
+    std::string attribute;
+    std::cin >> attribute;
+
+    while (attribute == "-" || attribute.length() < 2) {
+        fmt::print(util::error, util::Fault, type);
+        std::cin >> attribute;
+    }
+    
+    return attribute;
+}
+
 bool isPasswordPopular(const std::string& password) {
 
     std::string line;
@@ -292,8 +467,10 @@ bool isPasswordPopular(const std::string& password) {
     auto stream = std::fstream("rockyou.txt");
 
     bool popular = false;
-    int i = 0;
+
+    //int i = 0;
     while (getline(stream, line)) {
+        //fmt::print("{} ", i++);
         if (password == line) {
             popular = true;
             break;
@@ -490,7 +667,7 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
     PasswordPass* ppass = new PasswordPass(path, others);
     setPassList(decipheredList, '|', ppass);
     ppass->populatePasswordMap();
-    fmt::print(util::white, "\nLoged successfully pleasant useю\n");
+    fmt::print(util::white, "\nLoged successfully pleasant use\n");
     return ppass;
 }
 

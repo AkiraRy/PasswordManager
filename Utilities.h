@@ -14,8 +14,12 @@ namespace util {
 	extern const fmt::text_style white;
 	extern const fmt::text_style error;
 	extern const std::string wrongOption;
+	extern const std::string wrongRange;
 	extern const std::string errorPath;
 	extern const std::string errorPass;
+	extern const std::string pFault;
+	extern const std::string Fault;
+	extern const std::string cFault;
 	extern const std::filesystem::path home;
 	extern const std::filesystem::path homeParent;
 	extern const std::filesystem::path secretFolder;
@@ -25,10 +29,13 @@ namespace util {
 	void sortMenu();
 	void addPasswordMenu();
 	void editPasswordMenu();
-	void delitPasswordMenu();
+	void deletePasswordMenu();
+	void addCategoryMenu();
 }
 
-std::string generateRandomPassword(int length, bool includeUppercase, bool includeLowercase, bool includeSpecialChars);
+int readNumber();
+
+std::string generateRandomPassword(int length, bool includeUppercase,  bool includeSpecialChars);
 
 int rangeAnswer(int min, int max);
 

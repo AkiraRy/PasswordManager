@@ -12,6 +12,13 @@
 
 
 /* 
+* 
+* dodaj sprawdzanie czy znaki hasla i innych rzeczy podanych przez uzer-ow sa w listach
+* 
+* na koncu programu pytan uzytkownika o hasle zeby zapisac zmiany
+* 
+* lub przechowywuje to haslo jako zmienna w klasie uzytkownik
+* 
 * make prefix t  for timestamp and in decryption-en== to not check those lines since all lines starts with d
 typeid(...).name() - type
 
@@ -23,14 +30,14 @@ gugo2|haslo2|gmail
 
 
 int main() {
-
-
    
 
-    //PasswordPass* ppass = launch();
+    PasswordPass* ppass = launch();
     ////ppass->showCategories();
-    //simulateApp(ppass);
+    simulateApp(ppass);
 
+
+    
 
 
     /*fmt::print("path to a file is '{}'\n", ppass->getPathToFile());

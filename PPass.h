@@ -35,14 +35,23 @@ private:
 
 
 public:
+    std::string uniqueCategory();
 
-    void changePassword();
+    void passwordStatistics(const std::string password);
 
-    void removeDirectory();
+    bool usedBefore(const std::string password);
 
+    void deletePassword();
+
+    void editPassword();
+
+
+    void deleteCategory();
+
+    //done
     void addCategory();
 
-
+    //done
     void addPassword();
 
     void sortPasswords();
@@ -100,13 +109,19 @@ public:
     ~PasswordPass();
 };
 
+std::vector<std::string> templatePassword();
+
 void simulateApp(PasswordPass*& ppass);
+
+bool isPasswordSafe(const std::string& password);
 
 
 /// \brief Launches the password manager.
 /// \return The PasswordPass object created from createAccount() and loginIntoAccount().
 /// \sa createAccount(), loginIntoAccount()
 PasswordPass* launch();
+
+std::string inputType(std::string type);
 
 std::vector<Password> byAttribute(const std::vector<Password> vec, const std::string nameOfAttribute, const SearchOption so);
 
