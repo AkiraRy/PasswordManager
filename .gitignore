@@ -1,5 +1,6 @@
 fmt-10.0.0
 secrets
+rockyou.txt
 x64
 *.vcxproj
 *.vcxproj.*
