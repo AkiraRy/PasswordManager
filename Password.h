@@ -5,19 +5,19 @@
 /// \brief Object with password stored inside
 class Password {
     std::string name;
-    std::string text;
+    std::string pssword;
     std::string category;
     std::string website;
     std::string login;
 
 public:
-    Password(std::string name, std::string text, std::string category, std::string website, std::string login) : name(name), text(text), category(category), website(website), login(login) {} 
+    Password(std::string name, std::string text, std::string category, std::string website, std::string login) : name(name), pssword(text), category(category), website(website), login(login) {} 
 
 
     std::string to_string() const {
         std::string result;
         result += "Name: " + name + " ";
-        result += "Text: " + text + " ";
+        result += "Password: " + pssword + " ";
         result += "Category: " + category + "  ";
         result += "Website: " + website + " ";
         result += "Login: " + login + " ";
@@ -29,8 +29,8 @@ public:
         return name;
     }
 
-    std::string getText() const {
-        return text;
+    std::string getPassword() const {
+        return pssword;
     }
 
     std::string getCategory() const {
@@ -51,7 +51,7 @@ public:
     }
 
     void setText(const std::string& newText) {
-        text = newText;
+        pssword = newText;
     }
 
     void setCategory(const std::string& newCategory) {

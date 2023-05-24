@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include "Password.h"
-
+//zmienna
 enum class SearchOption {
     ByName,
     ByCategory,
@@ -17,6 +17,9 @@ class PasswordPass {
 private:
     std::vector<Password> passwordList;
     std::vector<std::string> other;
+
+    std::string password;
+
     std::string pathToFile;
     std::vector<int> timestamp;
     std::map<std::string, std::vector<Password>> passwordMap; // New map, category - passwords listt
@@ -24,7 +27,7 @@ private:
 private:
     /// \brief Private constructor to initialize the password list.
     /// \param list The list of decrypted passwords.
-    PasswordPass(std::string pathToFile, std::vector<std::string> other);
+    PasswordPass(std::string pathToFile, std::vector<std::string> other, std::string password);
 
     /// \brief Private method to handle login with a file path.
     /// \param manualPath - path from folder
@@ -35,6 +38,10 @@ private:
 
 
 public:
+    void deletePasswordsByCategory(const std::string& category);
+
+    std::string presentCategory();
+
     std::string uniqueCategory();
 
     void passwordStatistics(const std::string password);
@@ -43,9 +50,10 @@ public:
 
     void deletePassword();
 
+    //done
     void editPassword();
 
-
+    //done
     void deleteCategory();
 
     //done
@@ -65,7 +73,7 @@ public:
         return passwordMap;
     }
 
-
+    //done
     void searchPassword();
 
 
@@ -101,6 +109,9 @@ public:
 
     const std::string& getPathToFile() const {
         return pathToFile;
+    }
+    const std::string& getPassword() const {
+        return password;
     }
 
     void showPasswords();

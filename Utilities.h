@@ -31,7 +31,10 @@ namespace util {
 	void editPasswordMenu();
 	void deletePasswordMenu();
 	void addCategoryMenu();
+	void deleteCategoryMenu();
+	void editingMenu();
 }
+
 
 int readNumber();
 
@@ -39,7 +42,7 @@ std::string generateRandomPassword(int length, bool includeUppercase,  bool incl
 
 int rangeAnswer(int min, int max);
 
-void showFiles(const std::vector<std::string>& files);
+void showList(const std::vector<std::string>& files);
 
 std::vector<std::string> allSecrets();
 
@@ -92,7 +95,7 @@ std::string correctPath(std::string previousPATH);
 /// \brief Waits for correctPath to be provided
 ///
 /// \returns correct path to a file
-char inputAnswer( const char optionOne, const char optionTwo);
+char inputAnswer( const char optionOne, const char optionTwo, bool error);
 
 /// \brief Makes an list type of Password
 ///

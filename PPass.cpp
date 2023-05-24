@@ -15,15 +15,12 @@
 
 
 
-//Handling of any type of errors, repeated questions to users or maybe any other little stuff like split() separate to another file
-
-
 
 void simulateApp(PasswordPass*& ppass) {
     int option = -1;
     do {
         util::mainMenu();
-        option = rangeAnswer(0, 8);
+        option = rangeAnswer(0, 9);
         switch (option) {
             case 0:
                 quit(ppass);
@@ -52,6 +49,8 @@ void simulateApp(PasswordPass*& ppass) {
             case 8:
                 ppass->showCategories();
                 break;
+            case 9:
+                fmt::print(util::white, "\nMaster Password is {} \n", ppass->getPassword());
             default:
                 break;
 
@@ -268,16 +267,165 @@ std::vector<Password> byAttribute(const std::vector<Password> vec,const std::str
     return found;
 }
 
-PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other)
-    : pathToFile(pathToFile), other(other) {}
+PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other, std::string password)
+    : pathToFile(pathToFile), other(other), password(password) {}
 
 
 
 void PasswordPass::editPassword() {
 
+
+    int option = -1;
+
+    do {
+        util::editPasswordMenu(); // change this
+        option = rangeAnswer(0, 1);
+
+        switch (option) {
+        case 0:
+            break;
+        case 1: {
+            fmt::print(util::white, "\nIn the list bellow choose your password to edit\n");
+            showPasswords();
+            int choice = rangeAnswer(1, passwordList.size()); //  index of object to edit
+
+            fmt::print(util::white, "Password: \n {}", passwordList.at(choice - 1).to_string());
+
+            int editing = -1;
+            do {
+
+                util::editingMenu();
+                editing = rangeAnswer(0, 5);
+
+                switch (editing) {
+                    case 0: // out
+                        
+
+                        break;
+                    case 1: { // category
+                        // from active list of categories
+
+                        std::vector<std::string> categories = getAllCategories();
+
+                        showList(categories);
+                        int chosedCategory = rangeAnswer(1, categories.size());
+
+                        char answer;
+                        fmt::print(util::white, "\nAre you sure you want to change category to {} [y,N]\n> ", categories.at(choice - 1));
+                        answer = inputAnswer('y', 'N', false);
+
+                        if (answer == 'y') {
+                            fmt::print(util::white, "You`ve successfuly updated category for password");
+                            passwordList.at(choice-1).setCategory(categories.at(chosedCategory - 1));
+                        }
+                    }
+
+                        break;
+                    case 2: {// name
+                        // asking is already 
+                        std::string name = inputType("name");
+
+                        char answer;
+                        fmt::print(util::white, "\nAre you sure you want to change name to {} [y,N]\n> ", name);
+                        answer = inputAnswer('y', 'N', false);
+
+                        if (answer == 'y') {
+                            fmt::print(util::white, "You`ve successfuly updated name for password");
+                            passwordList.at(choice-1).setName(name);
+                        }
+
+
+                    }
+
+                        break;
+                    case 3: {// password
+
+                        
+                        std::string password = inputType("password");
+
+                        passwordStatistics(password);
+
+                        char answer;
+                        fmt::print(util::white, "\nAre you sure you want to change password to {} [y,N]\n> ", password);
+                        answer = inputAnswer('y', 'N', false);
+
+                        if (answer == 'y') {
+                            fmt::print(util::white, "You`ve successfuly updated password for password");
+                            passwordList.at(choice-1).setText(password);
+                        }
+                    }
+                        break;
+                    case 4: { // login
+                        std::string login = inputType("login");
+
+                        char answer;
+                        fmt::print(util::white, "\nAre you sure you want to change login to {} [y,N]\n> ", login);
+                        answer = inputAnswer('y', 'N', false);
+
+                        if (answer == 'y') {
+                            fmt::print(util::white, "You`ve successfuly updated login for password");
+                            passwordList.at(choice-1).setLogin(login);
+                        }
+                    }
+                        break;
+                    case 5: {// website
+                        std::string website = inputType("website");
+
+                        char answer;
+                        fmt::print(util::white, "\nAre you sure you want to change website to {} [y,N]\n> ", website);
+                        answer = inputAnswer('y', 'N', false);
+
+                        if (answer == 'y') {
+                            fmt::print(util::white, "You`ve successfuly updated website for password");
+                            passwordList.at(choice-1).setWebsite(website);
+                        }
+                    }
+                        break;
+                    default:
+                        fmt::print(util::error, "You just got in default case on line 385");
+                        break;
+                }
+
+            } while (editing != 0);
+
+
+        }
+              break;
+        }
+    } while (option != 0);
+
 }
 
 void PasswordPass::deleteCategory() {
+    int option = -1;
+
+    do {
+        util::deleteCategoryMenu();
+        option = rangeAnswer(0, 1);
+
+        switch (option) {
+        case 0:
+            break;
+        case 1: {
+            std::string category = presentCategory();
+
+            fmt::print(util::white, "\nCategory {} will be deleted with those passwords\n\n", category);
+
+            for (const auto el : getPasswordsByCategory(category)) {
+                fmt::print(util::white, "{}\n", el.to_string());
+            }
+
+            char answer;
+            fmt::print(util::white, "\nAre you sure you want to delete  those passwords [y,N]\n> ");
+            answer = inputAnswer('y', 'N', false);
+
+            if (answer == 'y') { deletePasswordsByCategory(category); }
+
+
+        }
+              break;
+        }
+    } while (option != 0);
 
 
 }
@@ -306,10 +454,7 @@ void PasswordPass::addCategory() {
         }
     } while (option != 0);
 }
-
-
-    
-
+  
 void PasswordPass::addPassword() {
     int option = -1;
 
@@ -321,31 +466,42 @@ void PasswordPass::addPassword() {
         case 0:
             break;
         case 1: {
-            // {name, category, website, login}
+
+            if (getAllCategories().size() < 1) {
+                fmt::print(util::white, "\nThere are no categories, please create a category first, than proceed\n");
+                break;
+            }
+
+            // {name, website, login}
             std::vector<std::string> data = templatePassword();
 
+            std::string category;
+            std::vector<std::string> categories = getAllCategories();
+
+            showList(categories);
+            int choice = rangeAnswer(1, categories.size());
             std::string password = inputType("password");
 
-            bool isSafe = isPasswordSafe(password);
-            bool isPopular = isPasswordPopular(password);
-            bool used = usedBefore(password);
+            //bool isSafe = isPasswordSafe(password);
+            //bool isPopular = isPasswordPopular(password);
+            //bool used = usedBefore(password);
 
 
-            fmt::print((isSafe?util::white : util::error), "\nYour password is {}", (isSafe ? "safe\n" : "not safe\n"));
-            fmt::print((isPopular ? util::error : util::white), "\nYour password is {}", (isPopular ? "popular\n" : "not popular\n"));
-            fmt::print((used ? util::error : util::white), "\nYour password was {}", (used ? "used\n" : "not used\n"));
+            passwordStatistics(password);
 
 
             char answer;
-            fmt::print(util::white, "\nAre you sure you want to leave this passwords [y,N]");
-            answer = inputAnswer('y', 'N');
+            fmt::print(util::white, "\nAre you sure you want to leave this passwords [y,N]\n> ");
+            answer = inputAnswer('y', 'N', false);
             
             if (answer == 'y') {
-                Password ps = Password(data.at(0), password, data.at(1), data.at(2), data.at(3));
-                passwordList.push_back(ps);
-                passwordMap[data.at(1)].push_back(ps);
 
-            } 
+                Password ps = Password(data.at(0), password, categories.at(choice-1), data.at(1), data.at(2));
+                passwordList.push_back(ps);
+                passwordMap[categories.at(choice-1)].push_back(ps);
+                fmt::print("\nPassword was created successfully here is overview\n");
+                fmt::print(util::white, "{}\n", ps.to_string());
+            }
 
         }
               break;
@@ -353,17 +509,24 @@ void PasswordPass::addPassword() {
 
             // {name, category, website, login}
             std::vector<std::string> data = templatePassword();
+            std::vector<std::string> categories = getAllCategories();
+
+            showList(categories);
+            int choice = rangeAnswer(1, categories.size());
+
+
+
             std::string password;
 
             
             fmt::print(util::white, "\nNow you prompt to autogenerate your password\nGive me length of it\n> ");
             int length = rangeAnswer(8, 40);
 
-            fmt::print(util::white, "\ndoes it have UPPERCASE ?\n [y, N]> ");
-            char uppercase = inputAnswer('y', 'N');
+            fmt::print(util::white, "\ndoes it have UPPERCASE ? [y, N]\n> ");
+            char uppercase = inputAnswer('y', 'N', false);
 
-            fmt::print(util::white, "\ndoes it have $YMB0|$ ?\n> [y,N]");
-            char symbols = inputAnswer('y', 'N');
+            fmt::print(util::white, "\ndoes it have $YMB0|$ ? [y,N]\n> ");
+            char symbols = inputAnswer('y', 'N', false);
 
             char answer;
 
@@ -375,7 +538,7 @@ void PasswordPass::addPassword() {
                 passwordStatistics(password);
 
                 fmt::print(util::white, "\nRegenerate Password? [y,N]");
-                answer = inputAnswer('y', 'N');
+                answer = inputAnswer('y', 'N', false    );
 
                 //apparantly input answer needs to be fixed first try is white second is red
 
@@ -383,13 +546,16 @@ void PasswordPass::addPassword() {
 
            
             fmt::print(util::white, "\nAre you sure you want to create this password [y,N]");
-            answer = inputAnswer('y', 'N');
+            answer = inputAnswer('y', 'N', false); // dodatu czy first moze?
             
 
             if (answer == 'y') {
-                Password ps = Password(data.at(0), password, data.at(1), data.at(2), data.at(3));
+                Password ps = Password(data.at(0), password, categories.at(choice-1), data.at(1), data.at(2));
                 passwordList.push_back(ps);
-                passwordMap[data.at(1)].push_back(ps);
+                passwordMap[categories.at(choice - 1)].push_back(ps);
+
+                fmt::print(util::white, "\nPassword was created successfully here is overview\n");
+                fmt::print(util::white, "{}\n", ps.to_string());
 
             }
 
@@ -421,7 +587,7 @@ bool PasswordPass::usedBefore(const std::string password) {
     bool used = false;
 
     for (const auto &el : passwordList) {
-        if (el.getText() == password) {
+        if (el.getPassword() == password) {
             used = true;
             break;
         }
@@ -437,14 +603,15 @@ std::vector<std::string> templatePassword() {
     std::string name;
     std::string login;
     std::string website;
-    std::string category;
+    
 
-    category = inputType("category");
     name = inputType("name");
     login = inputType("login");
     website = inputType("website");
 
-    return {name, category, website, login};
+
+
+    return {name, website, login};
 }
 
 std::string inputType(std::string type) {
@@ -513,6 +680,7 @@ void quit(PasswordPass*& passwordManager) {
 
     // Delete the PasswordPass object
     delete passwordManager;
+    //passwordManager = nullptr;
 
     std::cout << "Goodbye!\n";
 
@@ -538,6 +706,24 @@ std::vector<std::string> PasswordPass::getAllCategories() const {
     return categories;
 }
 
+
+void PasswordPass::deletePasswordsByCategory(const std::string& category) {
+    passwordList.erase(
+        std::remove_if(
+            passwordList.begin(),
+            passwordList.end(),
+            [&](const Password& password) {
+                return password.getCategory() == category;
+            }
+        ),
+        passwordList.end()
+                );
+
+    passwordMap.erase(category);
+
+}
+
+
 std::vector<Password> PasswordPass::getPasswordsByCategory(const std::string& category) {
     static const std::vector<Password> emptyPasswords; // Empty vector to return if category not found
 
@@ -556,12 +742,12 @@ void PasswordPass::showCategories() {
 }
 
 void PasswordPass::showPasswords() {
+    int i = 1;
     for (auto& el : this->getPasswordList()) {
-        std::cout << el.to_string() << std::endl;
+        fmt::print(util::white, "{} {}\n",i++, el.to_string());
     }
 }
 
-//unfinished and not sure if needed
 void PasswordPass::createAccount() {
     std::string path_str;
     fmt::print( "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ");
@@ -587,11 +773,13 @@ void setPassList(const std::vector<std::string> dirt, const char delimite, Passw
 }
 
 PasswordPass* PasswordPass::loginIntoAccount() {
+
+    //maybe optiization zrobic, zeby input == inputAnswer a nie przez cin
     fmt::print(util::white,"\nWould you like to pick a file from current folder or give a path? [F/P]\n> ");
     char input; 
     std::cin >> input;
     std::string path;
-    if (input != 'F' && input != 'P') {input = inputAnswer('F', 'P');}
+    if (input != 'F' && input != 'P') {input = inputAnswer('F', 'P', true);}
     if (input == 'P') {
         return PasswordPass::loginWithPath("");
     }
@@ -602,30 +790,30 @@ PasswordPass* PasswordPass::loginIntoAccount() {
 PasswordPass* PasswordPass::loginFromFolder() {
     if (!secretFolderIS()) {
         char answer;
-        fmt::print(util::white,"There is no Folder with secrets\nWould You like to create one or login with path? [C/P]\n> ");
+        fmt::print(util::white,"\nThere is no Folder with secrets\nWould You like to create one or login with path? [C/P]\n> ");
         std::cin >> answer;
-        if (answer != 'C' && answer != 'P') { answer = inputAnswer('C', 'P'); }
+        if (answer != 'C' && answer != 'P') { answer = inputAnswer('C', 'P', true); }
 
         if (answer == 'P') {
             return PasswordPass::loginWithPath("");
         }
         
         if (std::filesystem::create_directory(util::secretFolder)) {
-            fmt::print(util::white, "Directory created successfully.");
+            fmt::print(util::white, "\nDirectory created successfully.\n");
         }
         else {
-            fmt::print(util::white, "Failed to create directory.");
+            fmt::print(util::white, "\nFailed to create directory.\n");
         }
     }
 
     std::vector<std::string> currentOptions = allSecrets();
     if (currentOptions.size() < 1) { 
         //add here to create them also BUT, ask first teaches because this is not mentioned on project`s site
-        fmt::print(util::error, "There is no files in secret Folder"); 
+        fmt::print(util::error, "\nThere is no files in secret Folder\n"); 
     }
 
     fmt::print(util::white, "\nPlease choose one file from this list.\n");
-    showFiles(currentOptions);
+    showList(currentOptions);
     
     int option = rangeAnswer(1, currentOptions.size());
 
@@ -639,7 +827,7 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
     std::string path;
 
     if (autoPath.empty()) {
-        fmt::print(util::white, "Please provide me with a path to a file\n");
+        fmt::print(util::white, "\nPlease provide me with a path to a file\n");
         std::cin >> path;
         if (!std::filesystem::is_regular_file(path)) {
             path = correctPath(path);
@@ -651,7 +839,7 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
     
 
     std::string password;
-    fmt::print(util::white, "Please provide me with a password to a file\n");
+    fmt::print(util::white, "\nPlease provide me with a password to a file\n");
     std::cin >> password;
 
     bool dec = isDecrypted(path, password);
@@ -664,7 +852,7 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
 
     std::vector<std::string> others = filter(decipheredList);
 
-    PasswordPass* ppass = new PasswordPass(path, others);
+    PasswordPass* ppass = new PasswordPass(path, others, password);
     setPassList(decipheredList, '|', ppass);
     ppass->populatePasswordMap();
     fmt::print(util::white, "\nLoged successfully pleasant use\n");
@@ -675,7 +863,7 @@ PasswordPass* launch() {
     fmt::print(  fmt::fg(fmt::color::snow), "\tHello to PPass aka PasswordPass\nWhould you like to login or create secret file?\n[L/C]\n> ");
     char input;
     std::cin >> input;
-    if (input != 'L' && input != 'C') { input = inputAnswer('L', 'C'); }
+    if (input != 'L' && input != 'C') { input = inputAnswer('L', 'C', true); }
     if (input == 'L') { 
         return PasswordPass::loginIntoAccount(); 
     }
@@ -687,7 +875,7 @@ PasswordPass::~PasswordPass() {
     //not usre if i need to clean after those 2 containers
     delete &passwordList;
     delete &passwordMap;
-    delete this;
+    //delete this;
 }
 
 /*

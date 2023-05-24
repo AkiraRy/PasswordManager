@@ -78,6 +78,12 @@ namespace util {
         fmt::print(white, "0 - return to the main app\n\n");
     }
 
+    void deleteCategoryMenu() {
+        fmt::print(white, "\n\t\tYou Are In Delete Category Menu, choose one of the next options:\n");
+        fmt::print(white, "1 - proceed\n");
+        fmt::print(white, "0 - return to the main app\n\n");
+    }
+
     void editPasswordMenu() {
         fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
         fmt::print(white, "\nChoose on how to find password to edit\n");
@@ -85,6 +91,17 @@ namespace util {
         fmt::print(white, "2 - by name\n");
         fmt::print(white, "3 - by category and then name\n");
         fmt::print(white, "0 - return to the main app\n\n");
+    }
+
+    void editingMenu() {
+        fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
+        fmt::print(white, "\nChoose what field to edit\n");
+        fmt::print(white, "1 - category\n");
+        fmt::print(white, "2 - name\n");
+        fmt::print(white, "3 - password\n");
+        fmt::print(white, "4 - login\n");
+        fmt::print(white, "5 - website\n");
+        fmt::print(white, "0 - end editing\n\n");
     }
 
     void deletePasswordMenu() {
@@ -98,9 +115,32 @@ namespace util {
 
 }
 
+std::string PasswordPass::presentCategory() {
+    std::string category;
+
+    bool exists = false;
+    do {
+
+        fmt::print(util::white, "\nProvide category to be delete\n> ");
+        std::cin >> category;
+
+        for (const auto& el : getAllCategories()) {
+            if (el == category) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            fmt::print(util::error, "\nCategory '{}' doesn`t exists. Please choose a different category.\n", category);
+        }
+    } while (!exists);
+
+    return category;
+}
+
 std::string PasswordPass::uniqueCategory() {
     std::string category;
-    std::vector<std::string> currentCategories = getAllCategories();
 
     bool exists;
     do {
@@ -109,7 +149,7 @@ std::string PasswordPass::uniqueCategory() {
         fmt::print(util::white, "\nProvide a name for a category: ");
         std::cin >> category;
 
-        for (const auto& el : currentCategories) {
+        for (const auto& el : getAllCategories()) {
             if (el == category) {
                 exists = true;
                 break;
@@ -119,32 +159,37 @@ std::string PasswordPass::uniqueCategory() {
         if (exists) {
             fmt::print(util::error, "\nCategory '{}' already exists. Please choose a different name.\n", category);
         }
-    } while (exists);
+    } while (!exists);
 
     return category;
 }
 
-
 int readNumber() {
     std::string input;
-    int number;
+    int value = -1  ;
+    bool number = false;
 
-    while (true) {
-        std::cout << "\nEnter a number: ";
+    while (!number) {
         std::cin >> input;
-        std::stringstream ss(input);
-        if (ss >> number && ss.eof()) {
-            // Input is a valid number
+
+        try {
+            value = std::stoi(input);
             break;
+            
         }
-        else {
-            fmt::print(util::error, "Invalid input. Please enter a valid number.\n");
+        catch (const std::invalid_argument& ex) {
+            fmt::print(util::error, "\nError invcalid argument\n");
         }
+        catch (const std::out_of_range& ex) {
+            fmt::print(util::error, "\nError: out of range\n");
+        }
+
     }
 
-    return number;
-}
 
+    return value;
+
+}
 
 std::string generateRandomPassword(int length, bool includeUppercase, bool includeSpecialChars) {
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -177,32 +222,32 @@ std::string generateRandomPassword(int length, bool includeUppercase, bool inclu
 int rangeAnswer(int min, int max) {
 
 
-    char option;
     if (min < 0) {
         min = 1;
     }
-    std::cin >> option;
-
+    bool first = true;;
     int value;
 
-    if (!isdigit(option)) {
-        value = readNumber();
-    }
-    else {
-        value = option - '0';
-    }
+    do {
+        if (first) {
+            value = readNumber();
+            first = false;
+        }
+        else {
+            fmt::print(util::error, util::wrongRange, min, max);
+            value = readNumber();
+        }
 
-    while (!(value >= min && value <= max)) {
-        fmt::print(util::error, util::wrongRange, min, max);
-        std::cin >> value;
-    }
+    } while (!(value >= min && value <= max));
+        
+    
     return value;
 }
 
-void showFiles(const std::vector<std::string>& files) {
+void showList(const std::vector<std::string>& list) {
     int pos = 1;
 
-    for (const auto el : files) {
+    for (const auto el : list) {
         fmt::print(util::white, "{} - {}\n", pos++, el);
     }
 }
@@ -311,11 +356,20 @@ std::string correctPath(const std::string previousPATH) {
     return path;
 }
 
-char inputAnswer(const  char optionOne, const char optionTwo) {
+char inputAnswer(const  char optionOne, const char optionTwo, bool error) {
+    bool first = true;
+
     char input = ' ';
     while (input != optionOne && input != optionTwo) {
-        fmt::print(util::error, util::wrongOption, optionOne, optionTwo);
-        std::cin >> input;
+        if (first && !error) {
+            std::cin >> input;
+            first = false;
+
+        }
+        else {
+            fmt::print(util::error, util::wrongOption, optionOne, optionTwo);
+            std::cin >> input;
+        }
     }
     return input;
 }
