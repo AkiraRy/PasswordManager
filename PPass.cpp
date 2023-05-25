@@ -15,6 +15,8 @@
 
 
 /*
+* ADD TO EVERYTHING IF IT IS EMPTY JUST SHOW ERROR
+* 
 * i dk maybe add when deleting search by parameteres?
 * 
 */
@@ -101,15 +103,16 @@ void PasswordPass::saveChanges() {
         std::string data = startPassword + password.getName() + "|" + password.getPassword() + "|" + password.getCategory() + "|" + password.getWebsite() + "|" + password.getLogin();
         dataToWrite.push_back(data);
     }
-    
-    for (size_t i = 0; i < 3; i++) {
+    int i = 0;
+    for (auto el : other) {
         int minToInsert = (int)(i * (passwordList.size() / 3)); // 0 1/3 2/3
         int maxToInsert = (int)((i + 1) * (passwordList.size() / 3)); // 1/3 2/3 3 
-        if (minToInsert < 0) { minToInsert = 1; }
+        if (minToInsert < 1 ) { minToInsert = 1; }
         int indexToInsert = random(minToInsert, maxToInsert);
         dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
-        //fmt::print("\nmin  {} max {} , choosed {}\n", minToInsert, maxToInsert, indexToInsert);
+        fmt::print("\nmin  {} max {} , choosed {}\n", minToInsert, maxToInsert, indexToInsert);
         //dataToWrite.push_back(other.at(i));
+        i++;
     }
 
     // Write data back to a file
@@ -378,8 +381,8 @@ std::vector<Password> byAttribute(const std::vector<Password> vec,const std::str
     return found;
 }
 
-PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other, std::string password)
-    : pathToFile(pathToFile), other(other), password(password) {}
+PasswordPass::PasswordPass(std::string pathToFile,  std::string password)
+    : pathToFile(pathToFile),  password(password) {}
 
 void PasswordPass::editPassword() {
 
@@ -859,24 +862,75 @@ void PasswordPass::showPasswords() {
     }
 }
 
-void PasswordPass::createAccount() {
-    std::string path_str;
-    fmt::print( "Wprowadż sczieżke do pliku lub folderu z plikami szyfrowanymi\n: ");
-    std::cin >> path_str;
-    std::filesystem::path path_obj(path_str);
+PasswordPass* PasswordPass::createAccount() {
+    fmt::print(util::white, "\nYou`re in process of creaating an account for Password managing\n");
+    std::string fileName;
+    bool correctName = false;
+    std::string password;
 
-    if (std::filesystem::is_directory(path_obj)) {
-        std::cout << "The path is a directory." << std::endl;
-        //return PasswordPass();
-    }
-    else if (std::filesystem::is_regular_file(path_obj)) {
-        std::cout << "The path is a regular file." << std::endl;
-        //return PasswordPass();
+    do {
+        fmt::print(util::white, "\nGive me a name for the file\n> ");
+        std::cin >> fileName;
+
+        // Check if the file name is valid
+        if (fileName.empty()) {
+            fmt::print(util::white, "File name cannot be empty. Please enter a valid name.\n");
+        }
+        else if (fileName.find_first_of(R"(/[\\:*?"<>|])") != std::string::npos) {
+            fmt::print(util::white, "Invalid characters in the file name. Please enter a valid name.\n");
+        }
+        else {
+            correctName = true;
+        }
+    } while (!correctName);
+
+    std::filesystem::path path = util::secretFolder / fileName;
+    path.replace_extension(".txt");
+
+
+    std::fstream outputFile(path, std::ios::out);
+    if (outputFile.is_open()) {
+        outputFile << "DECRYPTED" << std::endl;
+        outputFile.close();
+        fmt::print(util::white, "\nYour secret file '{}' is created\n", fileName);
     }
     else {
-        std::cout << "The path does not exist, Please make sure that given path is correct" << std::endl;
-        //return PasswordPass();
+        fmt::print(util::white, "Error creating the file.\n");
     }
+    bool correctPassword = false;
+    fmt::print(util::white, "\nGive me a master password\n> ");
+
+    do {
+        std::cin >> password;
+        correctPassword = true;
+
+        if (isNotInSet(password)) {
+            correctPassword = false;
+            fmt::print(util::error, "\nProvided password has banned characters, try again\n> ");
+        }
+        
+        
+
+    } while (!correctPassword);
+
+    encryptFile(path.string(), password);
+
+    return new PasswordPass(path.string(), password);
+
+
+}
+
+//void isInAlphabetSet(std::string & str) {
+//
+//    for (size_t i = 0; i < length; i++)
+//    {
+//
+//    }
+//
+//}
+
+void setOthers(const std::vector<std::string> vec, PasswordPass* ps) {
+    ps->setOther(vec);
 }
 
 void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass* ps) {
@@ -963,7 +1017,8 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
 
     std::vector<std::string> others = filter(decipheredList);
 
-    PasswordPass* ppass = new PasswordPass(path, others, password);
+    PasswordPass* ppass = new PasswordPass(path, password);
+    setOthers(others, ppass);
     setPassList(decipheredList, '|', ppass);
     ppass->populatePasswordMap();
     fmt::print(util::white, "\nLoged successfully pleasant use\n");
@@ -978,7 +1033,10 @@ PasswordPass* launch() {
     if (input == 'L') { 
         return PasswordPass::loginIntoAccount(); 
     }
-    return  PasswordPass::loginIntoAccount();
+    //return  PasswordPass::loginIntoAccount();
+    PasswordPass::createAccount();
+    return nullptr;
+
 }
 
 PasswordPass::~PasswordPass() {

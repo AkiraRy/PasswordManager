@@ -18,20 +18,30 @@
 #include <random>
 
 namespace util {
+
+    //sets for password name
+    const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
+    const std::string numSet = "0123456789";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
+
+    // communication
     const fmt::text_style white = fmt::fg(fmt::color::snow);
     const fmt::text_style error = fmt::fg(fmt::color::pale_violet_red);
     const std::string pFault = "\nProvided password was not correct\n";
     const std::string Fault = "\nProvided {} was not correct\n";
     const std::string cFault = "\nProvided category was not correct\n";
     const std::string wrongOption = "\nPlease type [{0}/{1}] not any other character [{0}/{1}]\n> ";
-    const std::string wrongRange = "\nPlease type numbe in a range [{0}-{1}] not any other number [{0}-{1}]\n> ";
+    const std::string wrongRange = "\nPlease type numbe in a range [{0}-{1}] not any other number [{0}-{1}]\n";
     const std::string errorPath = "\nProvided path: '{}' is not a correct path to a file\n";
     const std::string errorPass = "\nPlease provide correct password unless you want to disintegrate your file\n";
     const std::filesystem::path home = std::filesystem::current_path();
     const std::filesystem::path homeParent = home.parent_path();
     const std::filesystem::path secretFolder = home.parent_path().append("secret");
 
+    
 
+    //menus
     void mainMenu() {
         fmt::print(white, "\n\t\tWelcome To Main Menu, Choose One Of The Next Options\n");
         fmt::print(white, "1 - search Passwords\n");
@@ -160,9 +170,27 @@ std::string PasswordPass::uniqueCategory() {
         if (exists) {
             fmt::print(util::error, "\nCategory '{}' already exists. Please choose a different name.\n", category);
         }
+        else {
+            exists = true;
+        }
     } while (!exists);
 
     return category;
+}
+
+bool isNotInSet(std::string & inputString) {
+    bool isBad = false;
+
+    for (auto el : inputString) {
+        if (util::capSet.find(el) == std::string::npos &&
+            util::lowSet.find(el) == std::string::npos &&
+            util::numSet.find(el) == std::string::npos &&
+            util::symSet.find(el) == std::string::npos) {
+            isBad = true;
+            break;
+        }
+    }
+    return isBad;
 }
 
 int readNumber() {
@@ -171,6 +199,7 @@ int readNumber() {
     bool number = false;
 
     while (!number) {
+        fmt::print(util::white, "\n> ");
         std::cin >> input;
 
         try {
@@ -254,7 +283,7 @@ int rangeAnswer(int min, int max) {
 
 void showList(const std::vector<std::string>& list) {
     int pos = 1;
-
+    fmt::print("\n");
     for (const auto el : list) {
         fmt::print(util::white, "{} - {}\n", pos++, el);
     }
@@ -302,8 +331,10 @@ std::vector<int> time() {
     int hours = localTime.tm_hour;
     int minutes = localTime.tm_min;
     int seconds = localTime.tm_sec;
+    int day = localTime.tm_mday;
 
-    std::vector<int> timeList = { hours, minutes, seconds };
+
+    std::vector<int> timeList = { day, hours, minutes, seconds };
     return timeList;
 }
 

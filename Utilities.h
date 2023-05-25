@@ -11,6 +11,12 @@
 
 
 namespace util {
+
+	extern const std::string capSet;
+	extern const std::string lowSet;
+	extern const std::string numSet;
+	extern const std::string symSet;
+
 	extern const fmt::text_style white;
 	extern const fmt::text_style error;
 	extern const std::string wrongOption;
@@ -34,6 +40,10 @@ namespace util {
 	void deleteCategoryMenu();
 	void editingMenu();
 }
+
+
+bool isNotInSet(std::string& inputString);
+
 int random(int min, int max);
 
 int readNumber();

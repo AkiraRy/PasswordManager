@@ -30,7 +30,7 @@ private:
 private:
     /// \brief Private constructor to initialize the password list.
     /// \param list The list of decrypted passwords.
-    PasswordPass(std::string pathToFile, std::vector<std::string> other, std::string password);
+    PasswordPass(std::string pathToFile, std::string password);
 
     /// \brief Private method to handle login with a file path.
     /// \param manualPath - path from folder
@@ -41,6 +41,10 @@ private:
 
 
 public:
+    void setOther(std::vector<std::string> vec) {
+        other = vec;
+    }
+
     void showPATH();
 
     void saveChanges();
@@ -95,7 +99,7 @@ public:
 
     /// \brief Creates a new password manager account.
     /// \sa loginIntoAccount(), launch()
-    static void createAccount();
+    static PasswordPass* createAccount();
 
     /// \brief Logs into an existing password manager account.
     /// \return The PasswordPass object representing the logged-in account.
@@ -148,3 +152,5 @@ std::vector<Password> byAttribute(const std::vector<Password> vec, const std::st
 void quit(PasswordPass*& passwordManager);
 
 bool isPasswordPopular(const std::string& password);
+
+void setOthers(std::vector<std::string> vec);

@@ -14,6 +14,10 @@
 
 
 /*
+* maybe transfer all sets to namespace
+* 
+* check if file is empty, than give him prompt again
+* 
 * fix the inputAnswer to read a string and check if length is 1
 * 
 * moze zrobutu tak abu wilni misca bylo musorom zapowneni
@@ -41,11 +45,7 @@ gugo2|haslo2|gmail
 
 
 int main() {
-    /*for (size_t i = 0; i < 5; i++)
-    {
-        fmt::print("{}\n", random(20));
-    }*/
-
+    
 
 
     PasswordPass* ppass = launch();
