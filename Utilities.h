@@ -71,9 +71,9 @@ bool containsSpecialCharacters(const std::string& str);
 /// \brief current time
 ///
 /// \returns hh mm ss current time in vector
-std::vector<int> time();
+std::vector<std::string> time();
 
-void wrtieTimestamp(const std::string filename);
+void writeTimestamp(const std::string filename);
 
 /// \brief Splits a string on provided delimiter
 ///

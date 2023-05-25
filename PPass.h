@@ -75,6 +75,7 @@ public:
 
     void sortPasswords();
 
+    void helpSort(std::vector<std::string> sortFields);
 
     // Function to retrieve passwords by category
     std::vector<Password> getPasswordsByCategory(const std::string& category);

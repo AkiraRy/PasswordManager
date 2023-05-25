@@ -70,7 +70,7 @@ namespace util {
         fmt::print(white, "2 - sort by name\n");
         fmt::print(white, "3 - sort by website\n");
         fmt::print(white, "4 - sort by login\n");
-        fmt::print(white, "5 - sort by more than 1 option\n");
+        fmt::print(white, "5 - sort by category and name\n");
         fmt::print(white, "0 - return to the main app\n\n");
     }
 
@@ -255,7 +255,6 @@ std::string generateRandomPassword(int length, bool includeUppercase, bool inclu
     return password;
 }
 
-
 int rangeAnswer(int min, int max) {
 
 
@@ -323,7 +322,7 @@ bool secretFolderIS() {
 }
 
 //done
-std::vector<int> time() {
+std::vector<std::string> time() {
     std::time_t currentTime = std::time(nullptr);
     std::tm localTime{};
     localtime_s(&localTime, &currentTime);
@@ -334,14 +333,56 @@ std::vector<int> time() {
     int day = localTime.tm_mday;
 
 
-    std::vector<int> timeList = { day, hours, minutes, seconds };
+    std::vector<std::string> timeList = { std::to_string(day), std::to_string(hours), std::to_string(minutes), std::to_string(seconds) };
     return timeList;
 }
 
 //need to finish this
-void wrtieTimestamp(const std::string filename) {
-    // require a vector of dechipered lines or vector of empty lines where i can change smth and than change those lines
-    std::vector<int> currTime = time();
+void writeTimestamp(const std::string filename) {
+    std::vector<std::string> t = time();
+
+    std::vector<std::string> data;
+
+    std::string line;
+    auto stream = std::fstream(filename, std::ios::in);
+    while (getline(stream, line)) {
+        if (isdigit(line.at(0))) {
+            continue;
+        }
+        data.push_back(line);
+    }
+    fmt::print("odczytalem plik");
+    stream.close();
+    int i = 0;
+    for (auto el : t) {
+        int minToInsert = (int)(i * ((data.size() - 1) / 4)); // 0 1/3 2/3
+
+        int maxToInsert = (int)((i + 1) * ((data.size() - 1) / 4)); // 1/3 2/3 3 
+        if (minToInsert < 1) { minToInsert = 1; }
+        if (minToInsert == maxToInsert) { maxToInsert++; }
+        int indexToInsert = random(minToInsert, maxToInsert);
+        data.insert(data.begin() + indexToInsert, t.at(t.size() - i - 1));
+        fmt::print("\nmin  {} max {} , choosed {}\n", minToInsert, maxToInsert, indexToInsert);
+        //dataToWrite.push_back(other.at(i));
+        i++;
+        if (i == 4) { break; }
+    }
+    fmt::print("dalem timestamp");
+    std::fstream outputFile; // Replace "path_to_file.txt" with the actual path to the file
+    outputFile.open(filename, std::ios::out);
+    fmt::print("zapisuje");
+    if (outputFile.is_open()) {
+        for (const auto& el : data) {
+            outputFile << el << "\n";
+        }
+
+        outputFile.close();
+        //fmt::print(util::white, "\nData successfully written to the file.\n");
+    }
+    else {
+        fmt::print(util::error, "\nError opening the file.\n");
+    }
+
 
 }
 
@@ -379,6 +420,8 @@ bool isDecrypted(const std::string path, const std::string password) {
 std::string correctPassword(const std::string path) {
     std::string password;
     do {
+        writeTimestamp(path);
+
         fmt::print(util::error, util::errorPass);
         std::cin >> password;
     } while (!isDecrypted(path, password));

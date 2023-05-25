@@ -106,14 +106,16 @@ void PasswordPass::saveChanges() {
     }
     int i = 0;
     for (auto el : other) {
-        int minToInsert = (int)(i * (passwordList.size() / 3)); // 0 1/3 2/3
-        int maxToInsert = (int)((i + 1) * (passwordList.size() / 3)); // 1/3 2/3 3 
+        int minToInsert = (int)(i * (passwordList.size() / 4)); // 0 1/3 2/3
+        int maxToInsert = (int)((i + 1) * (passwordList.size() / 4)); // 1/3 2/3 3 
         if (minToInsert < 1 ) { minToInsert = 1; }
+        if (minToInsert == maxToInsert) { maxToInsert++; }
         int indexToInsert = random(minToInsert, maxToInsert);
         dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
         fmt::print("\nmin  {} max {} , choosed {}\n", minToInsert, maxToInsert, indexToInsert);
         //dataToWrite.push_back(other.at(i));
         i++;
+        if (i == 4) { break; }
     }
 
     // Write data back to a file
@@ -185,6 +187,66 @@ void PasswordPass::deletePassword() {
 }
 
 void PasswordPass::sortPasswords() {
+
+    int option = -1;
+
+    do {
+        util::sortMenu(); // change this
+        option = rangeAnswer(0, 5);
+
+        switch (option) {
+            case 0:
+                break;
+            case 1:
+                helpSort({ "category" });
+                break;
+            case 2:
+                helpSort({ "name" });
+                break;
+            case 3:
+                helpSort({ "website" });
+                break; 
+            case 4:
+                helpSort({ "login" });
+                break; 
+            case 5: 
+                helpSort({ "category", "name" });
+                break;
+            defalt:
+                break;
+        }
+    } while (option != 0);
+    
+
+}   
+
+void PasswordPass::helpSort(std::vector<std::string> sortFields) {
+    auto sortingPredicate = [sortFields](const Password& pass1, const Password& pass2) {
+        for (const auto& field : sortFields) {
+            if (field == "name" && pass1.getName() != pass2.getName()) {
+                return pass1.getName() < pass2.getName();
+            }
+            if (field == "password" && pass1.getPassword() != pass2.getPassword()) {
+                return pass1.getPassword() < pass2.getPassword();
+            }
+            if (field == "category" && pass1.getCategory() != pass2.getCategory()) {
+                return pass1.getCategory() < pass2.getCategory();
+            }
+            if (field == "website" && pass1.getWebsite() != pass2.getWebsite()) {
+                return pass1.getWebsite() < pass2.getWebsite();
+            }
+            if (field == "login" && pass1.getLogin() != pass2.getLogin()) {
+                return pass1.getLogin() < pass2.getLogin();
+            }
+        }
+        return false; // Maintain the original order if all fields are equal
+    };
+
+    std::sort(passwordList.begin(), passwordList.end(), sortingPredicate);
+
+    for (const auto& password : passwordList) {
+        fmt::print("{}\n", password.to_string());
+    }
 }
 
 void PasswordPass::searchPassword() {
@@ -1012,10 +1074,20 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
     std::vector<std::string> others = filter(decipheredList);
 
     PasswordPass* ppass = new PasswordPass(path, password);
-    setOthers(others, ppass);
+    
     setPassList(decipheredList, '|', ppass);
+    
+
     ppass->populatePasswordMap();
-    fmt::print(util::white, "\nLoged successfully pleasant use\n");
+
+    fmt::print(util::white, "\n\n\n\n\n\nLoged successfully pleasant use\n");
+
+    if (others.size() == 4) { fmt::print(util::white, "\nLast login was {} may, {}:{}:{}\n", others.at(0), others.at(1), others.at(2), others.at(3)); }
+
+    // day hour minute seconds
+    std::vector<std::string> t = time();
+    setOthers(t, ppass);
+
     return ppass;
 }
 
@@ -1041,22 +1113,3 @@ PasswordPass::~PasswordPass() {
     //delete this;
 }
 
-/*
-for checking if string is empty and if yes i will write there a timestamp also timestamp will start with TSMP-{timestamp} in ordere like hh - mm - ss
-but i need ask if i store only 1 timestamp or more?
-and in case of wrong password i write same or jsut write wrong password;
-
-std::ifstream file("secret.txt"); // Open the file for reading
-    std::vector<std::string> lines; // Vector to store the lines
-
-    std::string line;
-    while (std::getline(file, line)) {
-        lines.push_back(line);
-    }
-
-    // Print the lines
-    for (const auto& line : lines) {
-        fmt::print("{}  isempty? {} \n", line, line.empty());
-    }
-    fmt::print("{}", lines.size());
-*/
