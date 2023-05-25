@@ -16,12 +16,15 @@ enum class SearchOption {
 class PasswordPass {
 private:
     std::vector<Password> passwordList;
+
     std::vector<std::string> other;
 
     std::string password;
 
     std::string pathToFile;
+
     std::vector<int> timestamp;
+
     std::map<std::string, std::vector<Password>> passwordMap; // New map, category - passwords listt
 
 private:
@@ -38,6 +41,10 @@ private:
 
 
 public:
+    void showPATH();
+
+    void saveChanges();
+
     void deletePasswordsByCategory(const std::string& category);
 
     std::string presentCategory();
@@ -102,6 +109,8 @@ public:
     const std::vector<Password>& getPasswordList() const {
         return passwordList;
     }
+
+    void showOther();
 
     const std::vector<std::string>& getOther() const {
         return other;

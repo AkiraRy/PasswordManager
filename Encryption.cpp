@@ -74,6 +74,14 @@ void encryptFile(const std::string filename, const std::string key) {
     std::vector<std::string> encrypted;
     
     while (getline(INstream, line)) {
+        if (line.empty()) {
+            continue;
+        }
+        if (isdigit(line.at(0))) {
+            encrypted.push_back(line);
+            continue;
+        }
+
         encrypted.push_back(encryptCaeser(line, key));
     }
     INstream.close();

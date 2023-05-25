@@ -34,7 +34,7 @@ namespace util {
 	void deleteCategoryMenu();
 	void editingMenu();
 }
-
+int random(int min, int max);
 
 int readNumber();
 

@@ -91,6 +91,13 @@ std::vector<std::string> decryptFile(const std::string filename, const std::stri
             isFirstLine = false;
             continue;  // Skip the first line
         }
+        if (line.empty() ) {
+            continue;
+        }
+        if (isdigit(line.at(0))) {
+            decypheredList.push_back(line);
+            continue;
+        }
         decypheredList.push_back(decryptCaeser(line, key));
     }
     INstream.close();

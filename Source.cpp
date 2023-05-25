@@ -5,21 +5,23 @@
 #include "PPass.h"
 #include "Decryption.h"
 #include "Encryption.h"
+#include "Password.h"
 #include "Utilities.h"
 #include <fmt/core.h>
 #include <fmt/color.h>
 #include <random>
 
 
-/*
-* w searchPassword zrobuut metodu na wyswitlenna
-* 
-* in these password founds by category add \n at end
-* 
-look for cin.ignore cin clean
-apropo timestamp
 
-ostatni dostep wypisze uzytkowniku 
+/*
+* fix the inputAnswer to read a string and check if length is 1
+* 
+* moze zrobutu tak abu wilni misca bylo musorom zapowneni
+* 
+* w searchPassword zrobuut metodu na wyswitlenna
+* * 
+look for cin.ignore cin clean
+ostatni dostep wypisze uzytkowniku - timestamp
 */
 
 
@@ -27,9 +29,7 @@ ostatni dostep wypisze uzytkowniku
 * dodaj '>' na kazdej linii inputu od uzytkownika
 * 
 * dodaj sprawdzanie czy znaki hasla i innych rzeczy podanych przez uzer-ow sa w listach
-* 
-* variable - haslo
-*   
+* *   
 * make prefix t  for timestamp and in decryption-en to not check those lines since all lines starts with d
 typeid(...).name() - type
 
@@ -41,13 +41,17 @@ gugo2|haslo2|gmail
 
 
 int main() {
+    /*for (size_t i = 0; i < 5; i++)
+    {
+        fmt::print("{}\n", random(20));
+    }*/
+
+
 
     PasswordPass* ppass = launch();
     simulateApp(ppass);
-
-
-
-
+    
+    
 
     
     return 0;

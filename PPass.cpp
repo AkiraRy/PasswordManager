@@ -14,61 +14,173 @@
 #include <regex>
 
 
-
+/*
+* i dk maybe add when deleting search by parameteres?
+* 
+*/
 
 void simulateApp(PasswordPass*& ppass) {
     int option = -1;
     do {
         util::mainMenu();
-        option = rangeAnswer(0, 9);
+        option = rangeAnswer(0, 12);
         switch (option) {
             case 0:
-                quit(ppass);
+                //quit(ppass);
+                fmt::print("Are you sure you want to leave? [Y, n]\n> ");
                 break;
             case 1:
-                ppass->searchPassword();
+                ppass->searchPassword(); // done
                 break;
             case 2:
                 ppass->sortPasswords();
                 break;
             case 3:
-                ppass->addPassword();
+                ppass->addPassword(); // done
                 break;
             case 4:
-                ppass->editPassword();
+                ppass->editPassword(); // done 
                 break;
             case 5:
-                ppass->deletePassword();
+                ppass->deletePassword(); // done
                 break;
             case 6:
-                ppass->addCategory();
+                ppass->addCategory(); // done
                 break;
             case 7:
-                ppass->deleteCategory();
+                ppass->deleteCategory(); // done
                 break;
             case 8:
-                ppass->showCategories();
+                ppass->showCategories(); // done
                 break;
             case 9:
-                fmt::print(util::white, "\nMaster Password is {} \n", ppass->getPassword());
+                fmt::print(util::white, "\nMaster Password is {} \n", ppass->getPassword()); // done
+                break;
+            case 10:
+                ppass->showPasswords(); // done
+                break;
+            case 11:
+                ppass->showOther(); // done
+                break;
+            case 12:
+                ppass->showPATH();
             default:
                 break;
-
 
         }
 
     } while (option != 0);
+    fmt::print("end");
+    ppass->saveChanges();
+
+
+
+}
+void PasswordPass::showPATH() {
+
+    fmt::println("{}", pathToFile);
+}
+
+void PasswordPass::showOther() {
+    fmt::print("\n");
+    for (auto el : other) {
+        fmt::println("{}", el);
+    }
     
 }
 
-void PasswordPass::deletePassword() {
+void PasswordPass::saveChanges() {
+    // prepare data to be written to a file
+    std::string key = "DECRYPTED";
+    char startPassword = 'd';
+
+    std::vector<std::string> dataToWrite;
+    dataToWrite.push_back(key);
+
+    for (auto &password : passwordList) {
+        std::string data = startPassword + password.getName() + "|" + password.getPassword() + "|" + password.getCategory() + "|" + password.getWebsite() + "|" + password.getLogin();
+        dataToWrite.push_back(data);
+    }
+    
+    for (size_t i = 0; i < 3; i++) {
+        int minToInsert = (int)(i * (passwordList.size() / 3)); // 0 1/3 2/3
+        int maxToInsert = (int)((i + 1) * (passwordList.size() / 3)); // 1/3 2/3 3 
+        if (minToInsert < 0) { minToInsert = 1; }
+        int indexToInsert = random(minToInsert, maxToInsert);
+        dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
+        //fmt::print("\nmin  {} max {} , choosed {}\n", minToInsert, maxToInsert, indexToInsert);
+        //dataToWrite.push_back(other.at(i));
+    }
+
+    // Write data back to a file
+    std::fstream outputFile; // Replace "path_to_file.txt" with the actual path to the file
+    outputFile.open(pathToFile, std::ios::out);
+
+    if (outputFile.is_open()) {
+        for (const auto& data : dataToWrite) {
+            outputFile << data << "\n";
+        }
+
+        outputFile.close();
+        fmt::print(util::white, "\nData successfully written to the file.\n");
+    }
+    else {
+       fmt::print(util::error, "\nError opening the file.\n");
+    }
+
+    encryptFile(pathToFile, password);
 
 }
 
+void PasswordPass::deletePassword() {
+    //idk jak to kilku usuwac? no po jednemu na raz
 
+
+
+    int option = -1;
+
+    do {
+        util::deletePasswordMenu(); // change this
+        option = rangeAnswer(0, 1);
+
+        switch (option) {
+        case 0:
+            break;
+        case 1: { // delete form list
+            fmt::print(util::white, "\nIn the list bellow choose your password to delete\n");
+            showPasswords();
+            int choice = rangeAnswer(1, passwordList.size()); //  index of object to delete
+
+            fmt::print(util::white, "Password: \n {}", passwordList.at(choice - 1).to_string());
+
+
+
+            fmt::print(util::white, "\nAre you sure you want to delete this password? [y,N]\n> ");
+            char answer = inputAnswer('y', 'N', false);
+
+            if (answer == 'y') {
+
+                
+                passwordList.erase(passwordList.begin() + choice - 1); // Delete password from the vector
+
+
+
+
+                fmt::print(util::white, "You have successfully deleted the password.\n");
+            }
+            
+
+        }
+              break;
+          defalt:
+              break;
+        }
+    } while (option != 0);
+
+
+}
 
 void PasswordPass::sortPasswords() {
-
 }
 
 
@@ -229,7 +341,6 @@ void PasswordPass::searchPassword() {
     } while (option != 0);
 }
 
-
 std::vector<Password> byAttribute(const std::vector<Password> vec,const std::string nameOfAttribute, const SearchOption so) {
 
     std::vector<Password> found;
@@ -270,8 +381,6 @@ std::vector<Password> byAttribute(const std::vector<Password> vec,const std::str
 PasswordPass::PasswordPass(std::string pathToFile, std::vector<std::string> other, std::string password)
     : pathToFile(pathToFile), other(other), password(password) {}
 
-
-
 void PasswordPass::editPassword() {
 
 
@@ -282,115 +391,117 @@ void PasswordPass::editPassword() {
         option = rangeAnswer(0, 1);
 
         switch (option) {
-        case 0:
-            break;
-        case 1: {
-            fmt::print(util::white, "\nIn the list bellow choose your password to edit\n");
-            showPasswords();
-            int choice = rangeAnswer(1, passwordList.size()); //  index of object to edit
+            case 0:
+                break;
+            case 1: {
+                fmt::print(util::white, "\nIn the list bellow choose your password to edit\n");
+                showPasswords();
+                int choice = rangeAnswer(1, passwordList.size()); //  index of object to edit
 
-            fmt::print(util::white, "Password: \n {}", passwordList.at(choice - 1).to_string());
+                fmt::print(util::white, "Password: \n {}", passwordList.at(choice - 1).to_string());
 
-            int editing = -1;
-            do {
+                int editing = -1;
+                do {
 
-                util::editingMenu();
-                editing = rangeAnswer(0, 5);
+                    util::editingMenu();
+                    editing = rangeAnswer(0, 5);
 
-                switch (editing) {
-                    case 0: // out
+                    switch (editing) {
+                        case 0: // out
                         
 
-                        break;
-                    case 1: { // category
-                        // from active list of categories
+                            break;
+                        case 1: { // category
+                            // from active list of categories
 
-                        std::vector<std::string> categories = getAllCategories();
+                            std::vector<std::string> categories = getAllCategories();
 
-                        showList(categories);
-                        int chosedCategory = rangeAnswer(1, categories.size());
+                            showList(categories);
+                            int chosedCategory = rangeAnswer(1, categories.size());
 
-                        char answer;
-                        fmt::print(util::white, "\nAre you sure you want to change category to {} [y,N]\n> ", categories.at(choice - 1));
-                        answer = inputAnswer('y', 'N', false);
+                            char answer;
+                            fmt::print(util::white, "\nAre you sure you want to change category to {} [y,N]\n> ", categories.at(choice - 1));
+                            answer = inputAnswer('y', 'N', false);
 
-                        if (answer == 'y') {
-                            fmt::print(util::white, "You`ve successfuly updated category for password");
-                            passwordList.at(choice-1).setCategory(categories.at(chosedCategory - 1));
-                        }
-                    }
-
-                        break;
-                    case 2: {// name
-                        // asking is already 
-                        std::string name = inputType("name");
-
-                        char answer;
-                        fmt::print(util::white, "\nAre you sure you want to change name to {} [y,N]\n> ", name);
-                        answer = inputAnswer('y', 'N', false);
-
-                        if (answer == 'y') {
-                            fmt::print(util::white, "You`ve successfuly updated name for password");
-                            passwordList.at(choice-1).setName(name);
+                            if (answer == 'y') {
+                                fmt::print(util::white, "You`ve successfuly updated category for password");
+                                passwordList.at(choice-1).setCategory(categories.at(chosedCategory - 1));
+                            }
                         }
 
+                            break;
+                        case 2: {// name
+                            // asking is already 
+                            std::string name = inputType("name");
 
-                    }
+                            char answer;
+                            fmt::print(util::white, "\nAre you sure you want to change name to {} [y,N]\n> ", name);
+                            answer = inputAnswer('y', 'N', false);
 
-                        break;
-                    case 3: {// password
+                            if (answer == 'y') {
+                                fmt::print(util::white, "You`ve successfuly updated name for password");
+                                passwordList.at(choice-1).setName(name);
+                            }
+
+
+                        }
+
+                            break;
+                        case 3: {// password
 
                         
-                        std::string password = inputType("password");
+                            std::string password = inputType("password");
 
-                        passwordStatistics(password);
+                            passwordStatistics(password);
 
-                        char answer;
-                        fmt::print(util::white, "\nAre you sure you want to change password to {} [y,N]\n> ", password);
-                        answer = inputAnswer('y', 'N', false);
+                            char answer;
+                            fmt::print(util::white, "\nAre you sure you want to change password to {} [y,N]\n> ", password);
+                            answer = inputAnswer('y', 'N', false);
 
-                        if (answer == 'y') {
-                            fmt::print(util::white, "You`ve successfuly updated password for password");
-                            passwordList.at(choice-1).setText(password);
+                            if (answer == 'y') {
+                                fmt::print(util::white, "You`ve successfuly updated password for password");
+                                passwordList.at(choice-1).setText(password);
+                            }
                         }
-                    }
-                        break;
-                    case 4: { // login
-                        std::string login = inputType("login");
+                            break;
+                        case 4: { // login
+                            std::string login = inputType("login");
 
-                        char answer;
-                        fmt::print(util::white, "\nAre you sure you want to change login to {} [y,N]\n> ", login);
-                        answer = inputAnswer('y', 'N', false);
+                            char answer;
+                            fmt::print(util::white, "\nAre you sure you want to change login to {} [y,N]\n> ", login);
+                            answer = inputAnswer('y', 'N', false);
 
-                        if (answer == 'y') {
-                            fmt::print(util::white, "You`ve successfuly updated login for password");
-                            passwordList.at(choice-1).setLogin(login);
+                            if (answer == 'y') {
+                                fmt::print(util::white, "You`ve successfuly updated login for password");
+                                passwordList.at(choice-1).setLogin(login);
+                            }
                         }
-                    }
-                        break;
-                    case 5: {// website
-                        std::string website = inputType("website");
+                            break;
+                        case 5: {// website
+                            std::string website = inputType("website");
 
-                        char answer;
-                        fmt::print(util::white, "\nAre you sure you want to change website to {} [y,N]\n> ", website);
-                        answer = inputAnswer('y', 'N', false);
+                            char answer;
+                            fmt::print(util::white, "\nAre you sure you want to change website to {} [y,N]\n> ", website);
+                            answer = inputAnswer('y', 'N', false);
 
-                        if (answer == 'y') {
-                            fmt::print(util::white, "You`ve successfuly updated website for password");
-                            passwordList.at(choice-1).setWebsite(website);
+                            if (answer == 'y') {
+                                fmt::print(util::white, "You`ve successfuly updated website for password");
+                                passwordList.at(choice-1).setWebsite(website);
+                            }
                         }
+                            break;
+                        default:
+                            fmt::print(util::error, "You just got in default case on line 385");
+                            break;
                     }
-                        break;
-                    default:
-                        fmt::print(util::error, "You just got in default case on line 385");
-                        break;
-                }
 
-            } while (editing != 0);
+                } while (editing != 0);
 
 
-        }
-              break;
+            }
+                  break;
+              defalt:
+                break;
         }
     } while (option != 0);
 
@@ -534,7 +645,7 @@ void PasswordPass::addPassword() {
                 password = generateRandomPassword(length, (uppercase == 'y'? true:false), (symbols == 'y' ? true : false) );
 
                 fmt::print(util::white, "Your password is {}\n", password);
-
+                fmt::print(util::white, "Please wait a little bit, we are checking your password");
                 passwordStatistics(password);
 
                 fmt::print(util::white, "\nRegenerate Password? [y,N]");

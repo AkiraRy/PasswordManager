@@ -87,7 +87,7 @@ namespace util {
     void editPasswordMenu() {
         fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
         fmt::print(white, "\nChoose on how to find password to edit\n");
-        fmt::print(white, "1 - by category\n");
+        fmt::print(white, "1 - show all current passwords\n"); // tu dokonczyc zeby moc wprowadzicz dane do wyszukiwania
         fmt::print(white, "2 - by name\n");
         fmt::print(white, "3 - by category and then name\n");
         fmt::print(white, "0 - return to the main app\n\n");
@@ -107,9 +107,10 @@ namespace util {
     void deletePasswordMenu() {
         fmt::print(white, "\n\t\tYou Are In Delit Password Menu, choose one of the next options:\n");
         fmt::print(white, "\nChoose on how to find password to delete\n");
-        fmt::print(white, "1 - by category\n");
-        fmt::print(white, "2 - by name\n");
-        fmt::print(white, "3 - by category and then name\n");
+        fmt::print(white, "1 - from list\n");
+        fmt::print(white, "2 - by category\n");
+        fmt::print(white, "3 - by name\n");
+        fmt::print(white, "4 - by category and then name\n");
         fmt::print(white, "0 - return to the main app\n\n");
     }
 
@@ -189,6 +190,13 @@ int readNumber() {
 
     return value;
 
+}
+
+int random(int min, int max) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> distribution(min, max);
+    return distribution(gen);
 }
 
 std::string generateRandomPassword(int length, bool includeUppercase, bool includeSpecialChars) {
@@ -389,8 +397,6 @@ std::vector<Password> passwordList(const std::vector<std::string> dirt,const  ch
                 el.erase(0, 1);
                 std::vector<std::string> str = split(el, '|');
                 if (str.size() != 5) { fmt::print(util::error, "Provided password was not correct\n"); continue; }
-
-
 
                 Password ps = Password(str.at(0), str.at(1), str.at(2), str.at(3), str.at(4));
 
