@@ -78,6 +78,7 @@ void simulateApp(PasswordPass*& ppass) {
 
 
 }
+
 void PasswordPass::showPATH() {
 
     fmt::println("{}", pathToFile);
@@ -185,7 +186,6 @@ void PasswordPass::deletePassword() {
 
 void PasswordPass::sortPasswords() {
 }
-
 
 void PasswordPass::searchPassword() {
     int option = -1;
@@ -710,7 +710,6 @@ bool PasswordPass::usedBefore(const std::string password) {
 
 }
 
-
 std::vector<std::string> templatePassword() {
     fmt::print(util::white, "\nYou must provide me with at least name and category for password:\n");
 
@@ -788,7 +787,7 @@ bool isPasswordSafe(const std::string& password) {
 }
 
 
-//call it at the end
+//cursed
 void quit(PasswordPass*& passwordManager) {
     // ALSO ADD HERE WRITE TO FILE TO SAVE ALL CHANGES.
 
@@ -920,14 +919,7 @@ PasswordPass* PasswordPass::createAccount() {
 
 }
 
-//void isInAlphabetSet(std::string & str) {
-//
-//    for (size_t i = 0; i < length; i++)
-//    {
-//
-//    }
-//
-//}
+
 
 void setOthers(const std::vector<std::string> vec, PasswordPass* ps) {
     ps->setOther(vec);
@@ -965,9 +957,11 @@ PasswordPass* PasswordPass::loginFromFolder() {
         
         if (std::filesystem::create_directory(util::secretFolder)) {
             fmt::print(util::white, "\nDirectory created successfully.\n");
+            return PasswordPass::createAccount();
         }
         else {
             fmt::print(util::white, "\nFailed to create directory.\n");
+            return nullptr;
         }
     }
 
