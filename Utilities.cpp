@@ -29,12 +29,13 @@ namespace util {
     const fmt::text_style white = fmt::fg(fmt::color::snow);
     const fmt::text_style error = fmt::fg(fmt::color::pale_violet_red);
     const std::string pFault = "\nProvided password was not correct\n";
-    const std::string Fault = "\nProvided {} was not correct\n";
-    const std::string cFault = "\nProvided category was not correct\n";
+    const std::string Fault = "\nProvided {} was not correct\nn> ";
+    const std::string cFault = "\nProvided category was not correct\n\n> ";
     const std::string wrongOption = "\nPlease type [{0}/{1}] not any other character [{0}/{1}]\n> ";
     const std::string wrongRange = "\nPlease type numbe in a range [{0}-{1}] not any other number [{0}-{1}]\n";
-    const std::string errorPath = "\nProvided path: '{}' is not a correct path to a file\n";
-    const std::string errorPass = "\nPlease provide correct password unless you want to disintegrate your file\n";
+    const std::string errorPath = "\nProvided path: '{}' is not a correct path to a file\n\n> ";
+    const std::string errorPass = "\nPlease provide correct password unless you want to disintegrate your file\n\n> ";
+    const std::string errorFile = "\nProvided file is incorrect\n\n>";
     const std::filesystem::path home = std::filesystem::current_path();
     const std::filesystem::path homeParent = home.parent_path();
     const std::filesystem::path secretFolder = home.parent_path().append("secret");
@@ -126,6 +127,7 @@ namespace util {
 
 }
 
+
 std::string PasswordPass::presentCategory() {
     std::string category;
 
@@ -170,6 +172,9 @@ std::string PasswordPass::uniqueCategory() {
         if (exists) {
             fmt::print(util::error, "\nCategory '{}' already exists. Please choose a different name.\n", category);
         }
+        else if (isNotInSet(category)) {
+            fmt::print(util::error, util::cFault);
+        }
         else {
             exists = true;
         }
@@ -178,7 +183,7 @@ std::string PasswordPass::uniqueCategory() {
     return category;
 }
 
-bool isNotInSet(std::string & inputString) {
+bool isNotInSet(const std::string & inputString) {
     bool isBad = false;
 
     for (auto el : inputString) {
@@ -208,7 +213,7 @@ int readNumber() {
             
         }
         catch (const std::invalid_argument& ex) {
-            fmt::print(util::error, "\nError invcalid argument\n");
+            fmt::print(util::error, "\nError invalid argument\n");
         }
         catch (const std::out_of_range& ex) {
             fmt::print(util::error, "\nError: out of range\n");
@@ -221,14 +226,14 @@ int readNumber() {
 
 }
 
-int random(int min, int max) {
+int random(const int min, const int max) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distribution(min, max);
     return distribution(gen);
 }
 
-std::string generateRandomPassword(int length, bool includeUppercase, bool includeSpecialChars) {
+std::string generateRandomPassword(const int length,const bool includeUppercase,const bool includeSpecialChars) {
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
@@ -255,14 +260,14 @@ std::string generateRandomPassword(int length, bool includeUppercase, bool inclu
     return password;
 }
 
-int rangeAnswer(int min, int max) {
+int rangeAnswer(int min,const int max) {
 
 
     if (min < 0) {
         min = 1;
     }
-    bool first = true;;
-    int value;
+    bool first = true;
+    int value = -1;
 
     do {
         if (first) {
@@ -321,7 +326,6 @@ bool secretFolderIS() {
     return presented;
 }
 
-//done
 std::vector<std::string> time() {
     std::time_t currentTime = std::time(nullptr);
     std::tm localTime{};
@@ -337,22 +341,24 @@ std::vector<std::string> time() {
     return timeList;
 }
 
-//need to finish this
-void writeTimestamp(const std::string filename) {
+void writeTimestamp(const std::string& filename) {
+    //reading
     std::vector<std::string> t = time();
 
     std::vector<std::string> data;
 
     std::string line;
     auto stream = std::fstream(filename, std::ios::in);
+    if (!stream.is_open()) { fmt::print(util::error, util::errorFile); return; }
     while (getline(stream, line)) {
         if (isdigit(line.at(0))) {
             continue;
         }
         data.push_back(line);
     }
-    fmt::print("odczytalem plik");
     stream.close();
+
+    //randomizing write
     int i = 0;
     for (auto el : t) {
         int minToInsert = (int)(i * ((data.size() - 1) / 4)); // 0 1/3 2/3
@@ -362,22 +368,19 @@ void writeTimestamp(const std::string filename) {
         if (minToInsert == maxToInsert) { maxToInsert++; }
         int indexToInsert = random(minToInsert, maxToInsert);
         data.insert(data.begin() + indexToInsert, t.at(t.size() - i - 1));
-        fmt::print("\nmin  {} max {} , choosed {}\n", minToInsert, maxToInsert, indexToInsert);
-        //dataToWrite.push_back(other.at(i));
         i++;
         if (i == 4) { break; }
     }
-    fmt::print("dalem timestamp");
-    std::fstream outputFile; // Replace "path_to_file.txt" with the actual path to the file
+
+    //write to file timestamp
+    std::fstream outputFile; 
     outputFile.open(filename, std::ios::out);
-    fmt::print("zapisuje");
     if (outputFile.is_open()) {
         for (const auto& el : data) {
             outputFile << el << "\n";
         }
 
         outputFile.close();
-        //fmt::print(util::white, "\nData successfully written to the file.\n");
     }
     else {
         fmt::print(util::error, "\nError opening the file.\n");
@@ -394,19 +397,18 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
 
     std::string token;
 
-    while (std::getline(iss, token, delimiter)) {
+    while (std::getline(iss, token, delimiter)) {// reads info until #delimiter is met
         tokens.push_back(token);
     }
 
     return tokens;
 }
 
-bool isDecrypted(const std::string path, const std::string password) {
+bool isDecrypted(const std::string &path, const std::string &password) {
 
     auto stream = std::fstream(path);
     if (!stream.is_open()) {
-        // Handle the error if the file couldn't be opened
-        fmt::print(util::error, "Error opening file: \n");
+        fmt::print(util::error, util::errorFile);
         return false;
     }
     std::string beggining;
@@ -414,16 +416,18 @@ bool isDecrypted(const std::string path, const std::string password) {
     if (decryptCaeser(beggining, password) == "DECRYPTED") {
         return true;
     }
+    stream.close();
     return false;
 }
 
-std::string correctPassword(const std::string path) {
+std::string correctPassword(const std::string &path) {
     std::string password;
     do {
         writeTimestamp(path);
 
         fmt::print(util::error, util::errorPass);
         std::cin >> password;
+        std::cin.clear();
     } while (!isDecrypted(path, password));
 
     return password;
@@ -438,36 +442,30 @@ std::string correctPath(const std::string previousPATH) {
     return path;
 }
 
-char inputAnswer(const  char optionOne, const char optionTwo, bool error) {
+char inputAnswer(const char optionOne, const char optionTwo, bool error) {
     bool first = true;
 
-    char input = ' ';
-    while (input != optionOne && input != optionTwo) {
+    std::string input = "  ";
+    while ((input.at(0) != optionOne && input.at(0) != optionTwo ) || input.size() > 1) {
         if (first && !error) {
             std::cin >> input;
             first = false;
-
         }
+        
         else {
             fmt::print(util::error, util::wrongOption, optionOne, optionTwo);
             std::cin >> input;
         }
     }
-    return input;
+    return input.at(0);
 }
 
-/// <summary>
-/// Creates a vector with Password instances
-/// </summary>
-/// <param name="dirt">raw vector with lines from a file</param>
-/// <param name="delimite"></param>
-/// <returns>vector<Password></returns>
-std::vector<Password> passwordList(const std::vector<std::string> dirt,const  char delimite) {
+std::vector<Password> passwordList(const std::vector<std::string> &dirt,const  char delimite) {
     std::vector<Password> pList;
 
     for (auto el : dirt) {
         if (el.length() > 0) { // jezeli to NIE linia pusta
-            if (el.at(0) == 'd') { // 
+            if (el.at(0) == 'd') { // password start
                 el.erase(0, 1);
                 std::vector<std::string> str = split(el, '|');
                 if (str.size() != 5) { fmt::print(util::error, "Provided password was not correct\n"); continue; }
@@ -477,9 +475,7 @@ std::vector<Password> passwordList(const std::vector<std::string> dirt,const  ch
                 pList.push_back(ps);
 
             }
-            else if (isdigit(el.at(0))) {
-
-            }
+            
         }
 
     }
@@ -488,9 +484,9 @@ std::vector<Password> passwordList(const std::vector<std::string> dirt,const  ch
 }
 
 /// <summary>
-/// filteres a vector from info that do not contain passwords
+/// filteres a vector from info that do not contain passwords, and stores it in another vector
 /// </summary>
-/// <param name="unfiltered"></param>
+/// <param name="unfiltered">decrypted vector of lines from file</param>
 /// <returns>vector of lines that do not contain password info</returns>
 std::vector<std::string> filter(std::vector<std::string>& unfiltered) {
     std::vector<std::string> other;

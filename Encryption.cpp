@@ -1,13 +1,9 @@
-#include <iostream>
 #include "Encryption.h"
 #include <string>
 #include <fstream>
 #include <algorithm>
 #include <sstream>
 #include <vector>
-
-//TODO add encryption of full file
-
 
 std::string encryptCaeser(const std::string message, const std::string key) {
 
@@ -17,7 +13,6 @@ std::string encryptCaeser(const std::string message, const std::string key) {
     const std::string numSet = "0123456789";
     const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
 
-    /*std::cout << "ENCRYPTION: " << std::endl;*/
     for (size_t i = 0; i < message.length(); i++)
     {
         if (isalpha(message[i])) {
@@ -63,16 +58,14 @@ std::string encryptCaeser(const std::string message, const std::string key) {
 
 }
 
-
-
 void encryptFile(const std::string filename, const std::string key) {
 
     auto INstream = std::fstream(filename);
 
     std::string line;
-    
+
     std::vector<std::string> encrypted;
-    
+
     while (getline(INstream, line)) {
         if (line.empty()) {
             continue;
@@ -86,7 +79,7 @@ void encryptFile(const std::string filename, const std::string key) {
     }
     INstream.close();
 
-    
+
     std::fstream OUTstream = std::fstream(filename);
 
     if (OUTstream.is_open()) {
@@ -96,22 +89,4 @@ void encryptFile(const std::string filename, const std::string key) {
     }
     OUTstream.close();
 
-    /*std::fstream OUTstream(filename, std::ios::out);
-
-
-    for (auto& el : encrypted) {
-        my_file << el << '\n';
-    }
-
-    my_file.close();
-    */
-}
-//outdated
-std::string encryptXOR(std::string& message, const std::string& key) {
-    std::cout << "Encryption of:" << std::endl;
-    std::cout << message << std::endl;
-    for (size_t i = 0; i < message.length(); i++) {
-        message[i] ^= key[i % key.length()];
-    }
-    return message;
 }

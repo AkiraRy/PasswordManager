@@ -24,7 +24,7 @@ public:
         return result;
     }
 
-    // Getters maybe i dont need getter?
+    // Getters 
     std::string getName() const {
         return name;
     }
@@ -66,5 +66,3 @@ public:
         login = newLogin;
     }
 };
-
-

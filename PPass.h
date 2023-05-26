@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include "Password.h"
-//zmienna
+
 enum class SearchOption {
     ByName,
     ByCategory,
@@ -41,20 +41,44 @@ private:
 
 
 public:
+    /**
+    * @brief Sets additional string data.
+    * @param vec The vector of strings.
+    */
     void setOther(std::vector<std::string> vec) {
         other = vec;
     }
 
+    /**
+    * @brief Displays the file path.
+    */
     void showPATH();
 
+    /*
+    *  @brief saves changes made during program
+    */
     void saveChanges();
 
+    /**
+    * @brief Deletes password withina certain category
+    */
     void deletePasswordsByCategory(const std::string& category);
 
+    /**
+    * Checks if input category is presented in class PasswordPass
+    *
+    * @return std::string Returns category that is included in PasswordPass.
+    */
     std::string presentCategory();
 
+    /**
+    * Checks if input category is not in class PasswordPass
+    *
+    * @return std::string Returns category that is not included in PasswordPass.
+    */
     std::string uniqueCategory();
 
+    //continue
     void passwordStatistics(const std::string password);
 
     bool usedBefore(const std::string password);

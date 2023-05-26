@@ -15,10 +15,7 @@
 
 
 /*
-* ADD TO EVERYTHING IF IT IS EMPTY JUST SHOW ERROR
-* 
-* i dk maybe add when deleting search by parameteres?
-* 
+* ADD TO EVERYTHING IF IT IS EMPTY JUST SHOW ERROR 
 */
 
 void simulateApp(PasswordPass*& ppass) {
@@ -139,14 +136,12 @@ void PasswordPass::saveChanges() {
 }
 
 void PasswordPass::deletePassword() {
-    //idk jak to kilku usuwac? no po jednemu na raz
-
-
+    
 
     int option = -1;
 
     do {
-        util::deletePasswordMenu(); // change this
+        util::deletePasswordMenu();
         option = rangeAnswer(0, 1);
 
         switch (option) {
@@ -161,7 +156,7 @@ void PasswordPass::deletePassword() {
 
 
 
-            fmt::print(util::white, "\nAre you sure you want to delete this password? [y,N]\n> ");
+            fmt::print(util::white, "\n\nAre you sure you want to delete this password? [y,N]\n\n> ");
             char answer = inputAnswer('y', 'N', false);
 
             if (answer == 'y') {
@@ -169,10 +164,7 @@ void PasswordPass::deletePassword() {
                 
                 passwordList.erase(passwordList.begin() + choice - 1); // Delete password from the vector
 
-
-
-
-                fmt::print(util::white, "You have successfully deleted the password.\n");
+                fmt::print(util::white, "\nYou have successfully deleted the password.\n");
             }
             
 
@@ -261,7 +253,7 @@ void PasswordPass::searchPassword() {
                 break;
             case 1: {
                 std::string category;
-                fmt::print(util::white, "\nPlease provide me with a category for password to be founded in\n ");
+                fmt::print(util::white, "\nPlease provide me with a category for password to be founded in\n\n> ");
                 std::cin >> category;
                 std::vector<Password> categorySearch = getPasswordsByCategory(category);
                 if (categorySearch.empty()) { fmt::print(util::error, "No passwords for '{}'", category); }
@@ -273,7 +265,7 @@ void PasswordPass::searchPassword() {
             }
             case 2: {
                 std::string name;
-                fmt::print(util::white, "\nPlease provide me with a name for password to be founded\n ");
+                fmt::print(util::white, "\nPlease provide me with a name for password to be founded\n\n> ");
                 std::cin >> name;
                 std::vector<Password> nameSearch = byAttribute(passwordList, name, SearchOption::ByName);
 
@@ -287,7 +279,7 @@ void PasswordPass::searchPassword() {
             }
             case 3: {
                 std::string login;
-                fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n ");
+                fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n\n> ");
                 std::cin >> login;
 
                 std::vector<Password> loginSearch = byAttribute(passwordList, login, SearchOption::ByLogin);
@@ -302,7 +294,7 @@ void PasswordPass::searchPassword() {
             }
             case 4: {
                 std::string webSite;
-                fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n ");
+                fmt::print(util::white, "\nPlease provide me with a login for password to be founded in\n\n> ");
                 std::cin >> webSite;
 
                 std::vector<Password> websiteSearch = byAttribute(passwordList, webSite, SearchOption::ByWebSite);
@@ -689,20 +681,22 @@ void PasswordPass::addPassword() {
 
             showList(categories);
             int choice = rangeAnswer(1, categories.size());
-
-
+            std::cin.ignore();
 
             std::string password;
 
             
-            fmt::print(util::white, "\nNow you prompt to autogenerate your password\nGive me length of it\n> ");
+            fmt::print(util::white, "\nNow you prompt to autogenerate your password\nGive me length of it\n");
             int length = rangeAnswer(8, 40);
+            std::cin.ignore();
 
-            fmt::print(util::white, "\ndoes it have UPPERCASE ? [y, N]\n> ");
+            fmt::print(util::white, "\ndoes it have UPPERCASE ? [y, N]\n\n> ");
             char uppercase = inputAnswer('y', 'N', false);
+            std::cin.ignore();
 
-            fmt::print(util::white, "\ndoes it have $YMB0|$ ? [y,N]\n> ");
+            fmt::print(util::white, "\ndoes it have $YMB0|$ ? [y,N]\n\n> ");
             char symbols = inputAnswer('y', 'N', false);
+            std::cin.ignore();
 
             char answer;
 
@@ -710,18 +704,17 @@ void PasswordPass::addPassword() {
                 password = generateRandomPassword(length, (uppercase == 'y'? true:false), (symbols == 'y' ? true : false) );
 
                 fmt::print(util::white, "Your password is {}\n", password);
-                fmt::print(util::white, "Please wait a little bit, we are checking your password");
+                fmt::print(util::white, "\nPlease wait a little bit, we are checking your password\n");
                 passwordStatistics(password);
 
-                fmt::print(util::white, "\nRegenerate Password? [y,N]");
-                answer = inputAnswer('y', 'N', false    );
+                fmt::print(util::white, "\nRegenerate Password? [y,N]\n\n> ");
+                answer = inputAnswer('y', 'N', false);
 
-                //apparantly input answer needs to be fixed first try is white second is red
 
             } while (answer != 'N');
 
            
-            fmt::print(util::white, "\nAre you sure you want to create this password [y,N]");
+            fmt::print(util::white, "\nAre you sure you want to create this password [y,N]\n\n> ");
             answer = inputAnswer('y', 'N', false); // dodatu czy first moze?
             
 
@@ -781,8 +774,12 @@ std::vector<std::string> templatePassword() {
     
 
     name = inputType("name");
+    std::cin.ignore();
     login = inputType("login");
+    std::cin.ignore();
     website = inputType("website");
+    std::cin.ignore();
+
 
 
 
@@ -790,11 +787,12 @@ std::vector<std::string> templatePassword() {
 }
 
 std::string inputType(std::string type) {
-    fmt::print(util::white, "\nGive me {} for password:\n ", type);
+    fmt::print(util::white, "\nGive me {} for password:\n\n> ", type);
     std::string attribute;
     std::cin >> attribute;
 
-    while (attribute == "-" || attribute.length() < 2) {
+    // while work as long as  attr = - or atr<2 or is bad, if first 2 are false, last will work
+    while (attribute == "-" || attribute.length() < 2 || isNotInSet(attribute) ) {
         fmt::print(util::error, util::Fault, type);
         std::cin >> attribute;
     }
@@ -994,11 +992,10 @@ void setPassList(const std::vector<std::string> dirt, const char delimite, Passw
 PasswordPass* PasswordPass::loginIntoAccount() {
 
     //maybe optiization zrobic, zeby input == inputAnswer a nie przez cin
-    fmt::print(util::white,"\nWould you like to pick a file from current folder or give a path? [F/P]\n> ");
-    char input; 
-    std::cin >> input;
+    fmt::print(util::white,"\nWould you like to pick a file from current folder or give a path? [F/P]\n\n> ");
+    char input = inputAnswer('F', 'P', false);
     std::string path;
-    if (input != 'F' && input != 'P') {input = inputAnswer('F', 'P', true);}
+    //if (input != 'F' && input != 'P') {input = inputAnswer('F', 'P', true);}
     if (input == 'P') {
         return PasswordPass::loginWithPath("");
     }
@@ -1048,7 +1045,7 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
     std::string path;
 
     if (autoPath.empty()) {
-        fmt::print(util::white, "\nPlease provide me with a path to a file\n");
+        fmt::print(util::white, "\nPlease provide me with a path to a file\n\n> ");
         std::cin >> path;
         if (!std::filesystem::is_regular_file(path)) {
             path = correctPath(path);
@@ -1060,7 +1057,7 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
     
 
     std::string password;
-    fmt::print(util::white, "\nPlease provide me with a password to a file\n");
+    fmt::print(util::white, "\nPlease provide me with a password to a file\n\n> ");
     std::cin >> password;
 
     bool dec = isDecrypted(path, password);
@@ -1092,10 +1089,9 @@ PasswordPass* PasswordPass::loginWithPath(std::string autoPath) {
 }
 
 PasswordPass* launch() {
-    fmt::print(  fmt::fg(fmt::color::snow), "\tHello to PPass aka PasswordPass\nWhould you like to login or create secret file?\n[L/C]\n> ");
-    char input;
-    std::cin >> input;
-    if (input != 'L' && input != 'C') { input = inputAnswer('L', 'C', true); }
+    fmt::print(  fmt::fg(fmt::color::snow), "\tHello to PPass aka PasswordPass\nWhould you like to login or create secret file?\n[L/C]\n\n> ");
+    char input = inputAnswer('L', 'C', false);
+    //if (input != 'L' &&input != 'C') { input = inputAnswer('L', 'C', true); }
     if (input == 'L') { 
         return PasswordPass::loginIntoAccount(); 
     }
