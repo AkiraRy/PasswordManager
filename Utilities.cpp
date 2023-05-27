@@ -127,7 +127,6 @@ namespace util {
 
 }
 
-
 std::string PasswordPass::presentCategory() {
     std::string category;
 
