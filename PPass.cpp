@@ -21,7 +21,7 @@ void simulateApp(PasswordPass*& ppass) {
         switch (option) {
         case 0: {
             fmt::print(util::white, "\nAre you sure you want to leave? [Y, n]\n> ");
-            char answer = inputAnswer('y', 'n', false);
+            char answer = inputAnswer('Y', 'n', false);
             if (answer == 'n') { option = -1; }
         }
                 break;
@@ -99,15 +99,19 @@ void PasswordPass::saveChanges() {
         dataToWrite.push_back(data);
     }
     int i = 0;
+    int tmpLength = dataToWrite.size();
     for (auto el : other) {
-        int minToInsert = (int)(i * (passwordList.size() / 4)); // 0 1/4 2/4 3/4
-        int maxToInsert = (int)((i + 1) * (passwordList.size() / 4)); // 1/4 2/4 3/4 4 
-        if (minToInsert < 1 ) { minToInsert = 1; }
-        if (minToInsert == maxToInsert) { maxToInsert++; }
-        int indexToInsert = random(minToInsert, maxToInsert);
-        dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
-        i++;
-        if (i == 4) { break; }
+        if (tmpLength < other.size()) { dataToWrite.push_back(el); }
+        else {
+            int minToInsert = (int)(i * (passwordList.size() / 4)); // 0 1/4 2/4 3/4
+            int maxToInsert = (int)((i + 1) * (passwordList.size() / 4)); // 1/4 2/4 3/4 4 
+            if (minToInsert < 1 ) { minToInsert = 1; }
+            if (minToInsert == maxToInsert) { maxToInsert++; }
+            int indexToInsert = random(minToInsert, maxToInsert);
+            dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
+            i++;
+            if (i == 4) { break; }
+        }
     }
 
     if (dataToWrite.empty()) { fmt::print(util::error, "\nNothing to writ\n"); return; }

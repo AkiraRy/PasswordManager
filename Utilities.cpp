@@ -225,7 +225,8 @@ int readNumber() {
 
 }
 
-int random(const int min, const int max) {
+int random(const int min, int max) {
+    if (min == max) { max++; }
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distribution(min, max);
@@ -412,6 +413,7 @@ bool isDecrypted(const std::string &path, const std::string &password) {
     }
     std::string beggining;
     getline(stream, beggining);
+    if (beggining.empty()) { fmt::print(util::error, "File is empty"); return false; }
     if (decryptCaeser(beggining, password) == "DECRYPTED") {
         return true;
     }

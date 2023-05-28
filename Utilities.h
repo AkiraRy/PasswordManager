@@ -57,7 +57,7 @@ bool isNotInSet(const std::string& inputString);
  * @param max The maximum value of the range (exclusive).
  * @return int Returns a random number within the specified range.
  */
-int random(const int min, const int max);
+int random(const int min, int max);
 
 /**
  * Reads a number from the keyboard.
