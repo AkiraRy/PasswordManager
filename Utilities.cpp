@@ -50,11 +50,11 @@ namespace util {
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
-    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?as";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?as ";
 
     // communication
     const std::string pFault = "\nProvided password was not correct\n";
-    const std::string Fault = "\nProvided {} was not correct\nn> ";
+    const std::string Fault = "\nProvided {} was not correct\n> ";
     const std::string cFault = "\nProvided category was not correct\n\n> ";
     const std::string wrongOption = "\nPlease type [{0}/{1}] not any other character [{0}/{1}]\n> ";
     const std::string wrongRange = "\nPlease type numbe in a range [{0}-{1}] not any other number [{0}-{1}]\n";

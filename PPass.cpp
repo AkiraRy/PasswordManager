@@ -119,21 +119,26 @@ void PasswordPass::saveChanges() {
     }
     int i = 0;
     int tmpLength = dataToWrite.size();
+
     for (auto el : other) {
-        if (tmpLength < other.size()) { dataToWrite.push_back(el); }
+        if (tmpLength <= other.size()) { dataToWrite.push_back(el); }
         else {
             int minToInsert = (int)(i * (passwordList.size() / 4)); // 0 1/4 2/4 3/4
             int maxToInsert = (int)((i + 1) * (passwordList.size() / 4)); // 1/4 2/4 3/4 4 
             if (minToInsert < 1 ) { minToInsert = 1; }
-            if (minToInsert == maxToInsert) { maxToInsert++; }
+            if (minToInsert > maxToInsert) { maxToInsert == minToInsert+1; }
+            fmt::println("przed random {}, {}", minToInsert, maxToInsert);
             int indexToInsert = random(minToInsert, maxToInsert);
+            fmt::println("po random");
             dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
             i++;
             if (i == 4) { break; }
         }
+
+        if (i == 4) { break; }
     }
 
-    if (dataToWrite.empty()) { fmt::print(util::error, "\nNothing to writ\n"); return; }
+    if (dataToWrite.empty()) { fmt::print(util::error, "\nNothing to write\n"); return; }
 
     // Write data back to a file
     std::fstream outputFile; 
@@ -145,17 +150,17 @@ void PasswordPass::saveChanges() {
         }
 
         outputFile.close();
-        fmt::print(util::userColor, "\nData successfully written to the file.\n");
+        fmt::print(util::userColor, "\nData successfully written to the file\n");
     }
     else {
-       fmt::print(util::error, "\nError opening the file.\n");
+       fmt::print(util::error, "\nError opening the file\n");
     }
 
     encryptFile(pathToFile, password);
 
 }
 
-void PasswordPass::deletePassword() { // DOROBIC xd
+void PasswordPass::deletePassword() { 
     int option = -1;
 
     do {
@@ -208,6 +213,8 @@ void PasswordPass::deletePassword() { // DOROBIC xd
             }
 
             int indexToDelete = rangeAnswer(1, vec.size());  // find index of password to delete from this category
+            fmt::print(util::userColor, "\nPassword for deletion:\n{}", vec.at(indexToDelete - 1).to_string());
+
 
             deletePasswordFromList({
                 vec.at(indexToDelete - 1).getName(),
@@ -223,11 +230,14 @@ void PasswordPass::deletePassword() { // DOROBIC xd
               break;
         case 3: {// by name
             int indexToDelete = 1;
+            fmt:print(util::userColor, "\nGive name of password to delete\n");
             std::string nameToDelete;
-            std::cin >> nameToDelete;
+            std::cin.clear();
+            std::cin.ignore();
+            getline(std::cin ,nameToDelete); // for handling also a space in name 
             std::vector<Password> vec = byAttribute(passwordList, nameToDelete, SearchOption::ByName);
             if (vec.size() < 1 ) {
-                fmt::print(util::error, "\nNo passwords for deletion were found\n");
+                fmt::print(util::error, "\nNo passwords for deletion were found with such name {}\n", nameToDelete);
                 break;
             }
             else if (vec.size() > 1) {
@@ -241,7 +251,7 @@ void PasswordPass::deletePassword() { // DOROBIC xd
             }
               // find index of password to delete from this category
 
-
+            fmt::print(util::userColor, "\nPassword for deletion:\n{}", vec.at(indexToDelete-1).to_string());
 
             deletePasswordFromList({
                 vec.at(indexToDelete - 1).getName(),
@@ -254,8 +264,46 @@ void PasswordPass::deletePassword() { // DOROBIC xd
             break;
         case 4: { // by cat then name
             if (getAllCategories().size() < 1) { fmt::print(util::error, "\n0 categories were found\n"); break; }
+            int indexToDelete = 1;
 
+            fmt::print(util::userColor, "\nChoose category from list\n");
+            showCategories();
+            int indexCategory = rangeAnswer(1, getAllCategories().size());
 
+            std::string choosenCategory = getAllCategories().at(indexCategory - 1);
+
+            auto vec = getPasswordsByCategory(choosenCategory); // pasword of category
+            if (vec.size() < 1) {
+                fmt::print(util::error, "\nNo passwords for deletion were found\n");
+                break;
+            }
+            // at the top we found all passwords with category
+            std::string name; 
+            fmt::print(util::userColor, "\ngive me name for password to be deleted\n");
+            std::cin >> name;
+
+            vec = byAttribute(vec, name, SearchOption::ByName);
+            if (vec.size() < 1) { fmt::print(util::error, "\nNo passwords were found with given category and name\n"); break; }
+            // top here we sorted them to be only with given name
+            else if (vec.size() > 1) { // if there is 2  password with same name, than we will give chance fr user to choose from
+                int i = 1;
+                fmt::print(util::userColor, "\nWhich password to delete ? [number]\n");
+                for (auto& el : vec) {
+                    fmt::print(util::userColor, "{} - {}\n", i++, el.to_string());
+
+                }
+                indexToDelete = rangeAnswer(1, vec.size());
+            }
+            fmt::print(util::userColor, "\nPassword for deletion:\n{}", vec.at(indexToDelete - 1).to_string());
+
+            // finally deleting
+            deletePasswordFromList({
+                vec.at(indexToDelete - 1).getName(),
+                vec.at(indexToDelete - 1).getPassword(),
+                vec.at(indexToDelete - 1).getCategory(),
+                vec.at(indexToDelete - 1).getWebsite(),
+                vec.at(indexToDelete - 1).getLogin(),
+                });
 
 
         }
@@ -267,6 +315,7 @@ void PasswordPass::deletePassword() { // DOROBIC xd
 
 
 }
+
 void PasswordPass::deletePasswordFromList(std::vector<std::string> fieldsOfDeletedVector) {
     if (fieldsOfDeletedVector.empty()) { fmt::print(util::error, "\nNo fields for deletion\n"); return; }
     // 0 - name, 1 - password, 2 - website, 3 - category, 4 - website, 5 - login
@@ -744,8 +793,12 @@ void PasswordPass::addPassword() {
             std::string category;
             std::vector<std::string> categories = getAllCategories();
 
+            fmt::print(util::userColor, "\nChoose category\n");
             showList(categories);
             int choice = rangeAnswer(1, categories.size());
+            std::cin.clear();
+            std::cin.ignore();
+
             std::string password = inputType("password");
 
             passwordStatistics(password);
@@ -858,6 +911,8 @@ bool PasswordPass::usedBefore(const std::string password) {
 }
 
 std::vector<std::string> templatePassword() {
+    std::cin.clear();
+    std::cin.ignore();
     fmt::print(util::userColor, "\nYou must provide me with at least name and category for password:\n");
 
     std::string name;
@@ -865,11 +920,10 @@ std::vector<std::string> templatePassword() {
     std::string website;
     
     name = inputType("name");
-    std::cin.ignore();
+    
     login = inputType("login");
-    std::cin.ignore();
+    
     website = inputType("website");
-    std::cin.ignore();
 
     return {name, website, login};
 }
@@ -877,12 +931,14 @@ std::vector<std::string> templatePassword() {
 std::string inputType(const std::string type) {
     fmt::print(util::userColor, "\nGive me {} for password:\n\n> ", type);
     std::string attribute;
-    std::cin >> attribute;
+    std::cin.clear();
+    getline(std::cin , attribute);
 
     // while work as long as  attr = - or atr<2 or is bad, if first 2 are false, last will work
     while (attribute == "-" || attribute.length() < 2 || isNotInSet(attribute) ) {
         fmt::print(util::error, util::Fault, type);
-        std::cin >> attribute;
+        std::cin.clear();
+        getline(std::cin, attribute);
     }
     
     return attribute;
