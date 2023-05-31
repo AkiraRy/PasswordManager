@@ -16,6 +16,8 @@ enum class SearchOption {
 /// \brief Object with decrypted passwords
 class PasswordPass {
 private:
+    //fmt::text_style USER_SPECIFIED_COLOR = util::white;
+
     std::vector<Password> passwordList;
 
     std::vector<std::string> other;
@@ -47,6 +49,8 @@ private:
 
 
 public:
+    void deletePasswordFromList(std::vector<std::string> fieldsOfDeletedVector);
+
     /**
     * @brief Sets additional string data.
     * @param vec The vector of strings.
@@ -269,7 +273,7 @@ std::string inputType(const std::string type);
 * 
 * @return vector<Password> of passwords found with thoose parameters
 */
-std::vector<Password> byAttribute(const std::vector<Password> vec, const std::string nameOfAttribute, const SearchOption so);
+std::vector<Password> byAttribute(const std::vector<Password>& vec, const std::string nameOfAttribute, const SearchOption so);
 
 //maybe delete
 void quit(PasswordPass*& passwordManager);

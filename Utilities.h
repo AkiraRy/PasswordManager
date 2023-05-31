@@ -11,14 +11,22 @@
 
 
 namespace util {
+	//custom colors
+	extern const std::vector<fmt::text_style> colors;
+	extern const std::vector<std::string> colorsString;
+	extern const fmt::text_style white;
+	extern const fmt::text_style error;
+	extern fmt::text_style userColor;
+	void setUserColor(const fmt::text_style& color);
 
+
+	//sets for password
 	extern const std::string capSet;
 	extern const std::string lowSet;
 	extern const std::string numSet;
 	extern const std::string symSet;
 
-	extern const fmt::text_style white;
-	extern const fmt::text_style error;
+	//eror msg
 	extern const std::string wrongOption;
 	extern const std::string wrongRange;
 	extern const std::string errorPath;
@@ -26,10 +34,13 @@ namespace util {
 	extern const std::string pFault;
 	extern const std::string Fault;
 	extern const std::string cFault;
+
+	//file sys
 	extern const std::filesystem::path home;
 	extern const std::filesystem::path homeParent;
 	extern const std::filesystem::path secretFolder;
 
+	//gui side
 	void mainMenu();
 	void searchMenu();
 	void sortMenu();

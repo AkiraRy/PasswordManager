@@ -18,16 +18,41 @@
 #include <random>
 
 namespace util {
+    //custom colors
+    const std::vector<fmt::text_style> colors = {
+        fmt::fg(fmt::color::coral),
+        fmt::fg(fmt::color::alice_blue),
+        fmt::fg(fmt::color::aquamarine),
+        fmt::fg(fmt::color::dark_orchid),
+        fmt::fg(fmt::color::deep_sky_blue),
+        fmt::fg(fmt::color::lemon_chiffon),
+        fmt::fg(fmt::color::steel_blue),
+    };
+    const std::vector<std::string> colorsString = {
+        "coral",
+        "alice_blue",
+        "aquamarine",
+        "dark_orchid",
+        "deep_sky_blue",
+        "lemon_chiffon",
+        "steel_blue",
+    };
+    // default ones
+    const fmt::text_style white = fmt::fg(fmt::color::snow);
+    const fmt::text_style error = fmt::fg(fmt::color::pale_violet_red);
+    fmt::text_style userColor = white;
+
+
+
+
 
     //sets for password name
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
-    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?as";
 
     // communication
-    const fmt::text_style white = fmt::fg(fmt::color::snow);
-    const fmt::text_style error = fmt::fg(fmt::color::pale_violet_red);
     const std::string pFault = "\nProvided password was not correct\n";
     const std::string Fault = "\nProvided {} was not correct\nn> ";
     const std::string cFault = "\nProvided category was not correct\n\n> ";
@@ -40,89 +65,97 @@ namespace util {
     const std::filesystem::path homeParent = home.parent_path();
     const std::filesystem::path secretFolder = home.parent_path().append("secret");
 
-    
+    void setUserColor(const fmt::text_style& color) {
+        userColor = color;
+    }
 
     //menus
     void mainMenu() {
-        fmt::print(white, "\n\t\tWelcome To Main Menu, Choose One Of The Next Options\n");
-        fmt::print(white, "1 - search Passwords\n");
-        fmt::print(white, "2 - sort Passwords\n");
-        fmt::print(white, "3 - add Password\n");
-        fmt::print(white, "4 - edit Password\n");
-        fmt::print(white, "5 - delete Password(s)\n");
-        fmt::print(white, "6 - add category\n");
-        fmt::print(white, "7 - delete category\n");
-        fmt::print(white, "0 - quit the app\n\n");
+        fmt::print(userColor, "\n\t\tWelcome To Main Menu, Choose One Of The Next Options\n");
+        fmt::print(userColor, " 1 - search Passwords\n");
+        fmt::print(userColor, " 2 - sort Passwords\n");
+        fmt::print(userColor, " 3 - add Password\n");
+        fmt::print(userColor, " 4 - edit Password\n");
+        fmt::print(userColor, " 5 - delete Password(s)\n");
+        fmt::print(userColor, " 6 - add category\n");
+        fmt::print(userColor, " 7 - delete category\n");
+        fmt::print(userColor, " 8 - show all categories\n");
+        fmt::print(userColor, " 9 - master password\n");
+        fmt::print(userColor, "10 - show all password\n");
+        fmt::print(userColor, "11 - show other\n");
+        fmt::print(userColor, "12 - show PATH to file\n");
+        fmt::print(userColor, "13 - customize color(fg)\n");
+        fmt::print(userColor, "\n0 - quit the app\n\n");
     }
 
     void searchMenu() {
-        fmt::print(white, "\n\n\t\tYou Are In Search Menu, choose one of the next options\n");
-        fmt::print(white, "1 - search by category\n");
-        fmt::print(white, "2 - search by name\n")   ;
-        fmt::print(white, "3 - search by login\n");
-        fmt::print(white, "4 - search by website\n");
-        fmt::print(white, "5 - search by all optiions\n");
-        fmt::print(white, "0 - return to the main men\n\n");
+        fmt::print(userColor, "\n\n\t\tYou Are In Search Menu, choose one of the next options\n");
+        fmt::print(userColor, "1 - search by category\n");
+        fmt::print(userColor, "2 - search by name\n")   ;
+        fmt::print(userColor, "3 - search by login\n");
+        fmt::print(userColor, "4 - search by website\n");
+        fmt::print(userColor, "5 - search by all optiions\n");
+        fmt::print(userColor, "0 - return to the main men\n\n");
     }
 
     void sortMenu() {
-        fmt::print(white, "\n\t\tYou Are In Menu, choose one of the next options:\n");
-        fmt::print(white, "1 - sort by category\n");
-        fmt::print(white, "2 - sort by name\n");
-        fmt::print(white, "3 - sort by website\n");
-        fmt::print(white, "4 - sort by login\n");
-        fmt::print(white, "5 - sort by category and name\n");
-        fmt::print(white, "0 - return to the main app\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Menu, choose one of the next options:\n");
+        fmt::print(userColor, "1 - sort by category\n");
+        fmt::print(userColor, "2 - sort by name\n");
+        fmt::print(userColor, "3 - sort by website\n");
+        fmt::print(userColor, "4 - sort by login\n");
+        fmt::print(userColor, "5 - sort by category and name\n");
+        fmt::print(userColor, "0 - return to the main app\n\n");
     }
 
     void addPasswordMenu() {
-        fmt::print(white, "\n\t\tYou Are In Add Password Menu, choose one of the next options:\n");
-        fmt::print(white, "\nFollow The Rules, If You Dont Want to mentioned a field place '-'\n");
-        fmt::print(white, "1 - create your own\n");
-        fmt::print(white, "2 - generate\n");
-        fmt::print(white, "0 - return to the main app\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Add Password Menu, choose one of the next options:\n");
+        fmt::print(userColor, "\nFollow The Rules, If You Dont Want to mentioned a field place '-'\n");
+        fmt::print(userColor, "1 - create your own\n");
+        fmt::print(userColor, "2 - generate\n");
+        fmt::print(userColor, "0 - return to the main app\n\n");
     }
 
     void addCategoryMenu() {
-        fmt::print(white, "\n\t\tYou Are In Add Category Menu, choose one of the next options:\n");
-        fmt::print(white, "1 - proceed\n");
-        fmt::print(white, "0 - return to the main app\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Add Category Menu, choose one of the next options:\n");
+        fmt::print(userColor, "1 - proceed\n");
+        fmt::print(userColor, "0 - return to the main app\n\n");
     }
 
     void deleteCategoryMenu() {
-        fmt::print(white, "\n\t\tYou Are In Delete Category Menu, choose one of the next options:\n");
-        fmt::print(white, "1 - proceed\n");
-        fmt::print(white, "0 - return to the main app\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Delete Category Menu, choose one of the next options:\n");
+        fmt::print(userColor, "1 - proceed\n");
+        fmt::print(userColor, "0 - return to the main app\n\n");
     }
 
     void editPasswordMenu() {
-        fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
-        fmt::print(white, "\nChoose on how to find password to edit\n");
-        fmt::print(white, "1 - show all current passwords\n"); // tu dokonczyc zeby moc wprowadzicz dane do wyszukiwania
-        fmt::print(white, "2 - by name\n");
-        fmt::print(white, "3 - by category and then name\n");
-        fmt::print(white, "0 - return to the main app\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
+        fmt::print(userColor, "\nChoose on how to find password to edit\n");
+        fmt::print(userColor, "1 - show all current passwords\n"); // tu dokonczyc zeby moc wprowadzicz dane do wyszukiwania
+        fmt::print(userColor, "2 - by name\n");
+        fmt::print(userColor, "3 - by category and then name\n");
+        fmt::print(userColor, "0 - return to the main app\n\n");
     }
 
     void editingMenu() {
-        fmt::print(white, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
-        fmt::print(white, "\nChoose what field to edit\n");
-        fmt::print(white, "1 - category\n");
-        fmt::print(white, "2 - name\n");
-        fmt::print(white, "3 - password\n");
-        fmt::print(white, "4 - login\n");
-        fmt::print(white, "5 - website\n");
-        fmt::print(white, "0 - end editing\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Edit Password Menu, choose one of the next options:\n");
+        fmt::print(userColor, "\nChoose what field to edit\n");
+        fmt::print(userColor, "1 - category\n");
+        fmt::print(userColor, "2 - name\n");
+        fmt::print(userColor, "3 - password\n");
+        fmt::print(userColor, "4 - login\n");
+        fmt::print(userColor, "5 - website\n");
+        fmt::print(userColor, "0 - end editing\n\n");
     }
 
     void deletePasswordMenu() {
-        fmt::print(white, "\n\t\tYou Are In Delit Password Menu, choose one of the next options:\n");
-        fmt::print(white, "\nChoose on how to find password to delete\n");
-        fmt::print(white, "1 - from list\n");
-        fmt::print(white, "2 - by category\n");
-        fmt::print(white, "3 - by name\n");
-        fmt::print(white, "4 - by category and then name\n");
-        fmt::print(white, "0 - return to the main app\n\n");
+        fmt::print(userColor, "\n\t\tYou Are In Delete Password Menu, choose one of the next options:\n");
+        fmt::print(userColor, "\nChoose on how to find password to delete\n");
+        fmt::print(userColor, "1 - from list\n");
+        fmt::print(userColor, "2 - by category\n");
+        fmt::print(userColor, "3 - by name\n");
+        fmt::print(userColor, "4 - by category and then name\n");
+        fmt::print(userColor, "0 - return to the main app\n\n");
     }
 
 }
@@ -133,7 +166,7 @@ std::string PasswordPass::presentCategory() {
     bool exists = false;
     do {
 
-        fmt::print(util::white, "\nProvide category to be delete\n> ");
+        fmt::print(util::userColor, "\nProvide category to be delete\n> ");
         std::cin >> category;
 
         for (const auto& el : getAllCategories()) {
@@ -158,7 +191,7 @@ std::string PasswordPass::uniqueCategory() {
     do {
         exists = false;
 
-        fmt::print(util::white, "\nProvide a name for a category: ");
+        fmt::print(util::userColor, "\nProvide a name for a category: ");
         std::cin >> category;
 
         for (const auto& el : getAllCategories()) {
@@ -203,7 +236,7 @@ int readNumber() {
     bool number = false;
 
     while (!number) {
-        fmt::print(util::white, "\n> ");
+        fmt::print(util::userColor, "\n> ");
         std::cin >> input;
 
         try {
@@ -285,11 +318,12 @@ int rangeAnswer(int min,const int max) {
     return value;
 }
 
+//here
 void showList(const std::vector<std::string>& list) {
     int pos = 1;
     fmt::print("\n");
     for (const auto el : list) {
-        fmt::print(util::white, "{} - {}\n", pos++, el);
+        fmt::print(util::userColor, "{} - {}\n", pos++, el);
     }
 }
 
@@ -496,7 +530,6 @@ std::vector<std::string> filter(std::vector<std::string>& unfiltered) {
         return line.length() > 0 && line[0] == 'd';
         });
 
-    //back_inserter to efficiently move string and do not make copies of them
     std::move(partitionPoint, unfiltered.end(), std::back_inserter(other));
 
 
