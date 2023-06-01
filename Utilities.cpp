@@ -46,11 +46,11 @@ namespace util {
 
 
 
-    //sets for password name
+    //sets for password fields
     const std::string capSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const std::string lowSet = "abcdefghijklmnopqrstuvwxyz";
     const std::string numSet = "0123456789";
-    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/?as ";
+    const std::string symSet = "!@#$%^&*()_+-=[]{}|;:\",<.>/? ";
 
     // communication
     const std::string pFault = "\nProvided password was not correct\n";
@@ -496,8 +496,8 @@ char inputAnswer(const char optionOne, const char optionTwo, bool error) {
 }
 
 std::vector<Password> passwordList(const std::vector<std::string> &dirt,const  char delimite) {
-    std::vector<Password> pList;
-
+    std::vector<Password> pList ;
+    if (dirt.empty()) { return pList; }
     for (auto el : dirt) {
         if (el.length() > 0) { // jezeli to NIE linia pusta
             if (el.at(0) == 'd') { // password start

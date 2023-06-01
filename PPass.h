@@ -42,7 +42,7 @@ private:
     *
     * @return PasswordPass pointer
     */
-    static PasswordPass* loginWithPath(const std::string autoPath);
+    static PasswordPass* loginWithPath(const std::string autoPath, const std::string& autoPass);
 
     /// \brief Login by choosing file from a folder.
     static PasswordPass* loginFromFolder();

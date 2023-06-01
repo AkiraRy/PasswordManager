@@ -122,23 +122,26 @@ void PasswordPass::saveChanges() {
 
     for (auto el : other) {
         if (tmpLength <= other.size()) { dataToWrite.push_back(el); }
+        
+
         else {
+            
             int minToInsert = (int)(i * (passwordList.size() / 4)); // 0 1/4 2/4 3/4
+            
             int maxToInsert = (int)((i + 1) * (passwordList.size() / 4)); // 1/4 2/4 3/4 4 
+            
             if (minToInsert < 1 ) { minToInsert = 1; }
-            if (minToInsert > maxToInsert) { maxToInsert == minToInsert+1; }
-            fmt::println("przed random {}, {}", minToInsert, maxToInsert);
+            if (minToInsert > maxToInsert) { maxToInsert = minToInsert+1; }
+           
             int indexToInsert = random(minToInsert, maxToInsert);
-            fmt::println("po random");
+            
             dataToWrite.insert(dataToWrite.begin() + indexToInsert, other.at(other.size() - i - 1));
             i++;
             if (i == 4) { break; }
         }
-
-        if (i == 4) { break; }
     }
 
-    if (dataToWrite.empty()) { fmt::print(util::error, "\nNothing to write\n"); return; }
+    if (dataToWrite.empty()) { fmt::print(util::error, "\nNothing to writ\n"); return; }
 
     // Write data back to a file
     std::fstream outputFile; 
@@ -150,10 +153,10 @@ void PasswordPass::saveChanges() {
         }
 
         outputFile.close();
-        fmt::print(util::userColor, "\nData successfully written to the file\n");
+        fmt::print(util::userColor, "\nData successfully written to the file.\n");
     }
     else {
-       fmt::print(util::error, "\nError opening the file\n");
+       fmt::print(util::error, "\nError opening the file.\n");
     }
 
     encryptFile(pathToFile, password);
@@ -181,7 +184,7 @@ void PasswordPass::deletePassword() {
             fmt::print(util::userColor, "\n\nAre you sure you want to delete this password? [Y,n]\n\n> ");
             char answer = inputAnswer('Y', 'n', false);
 
-            if (answer == 'Y') {// dodaj jeszcze delete z mapy   
+            if (answer == 'Y') { 
                 passwordList.erase(passwordList.begin() + choice - 1); // Delete password from the vector
 
                 fmt::print(util::userColor, "\nYou have successfully deleted the password.\n");
@@ -192,7 +195,7 @@ void PasswordPass::deletePassword() {
               break;
         case 2: {
             if (getAllCategories().size() < 1) { fmt::print(util::error, "\n0 categories were found\n"); break; }
-
+            if (passwordList.empty()) { fmt::print(util::error, "Password List Is Empty."); break; }
             fmt::print(util::userColor, "\nChoose category from list\n");
             showCategories();
             int indexCategory = rangeAnswer(1, getAllCategories().size());
@@ -229,8 +232,9 @@ void PasswordPass::deletePassword() {
         }
               break;
         case 3: {// by name
+            if (passwordList.empty()) { fmt::print(util::error, "Password List Is Empty."); break; }
             int indexToDelete = 1;
-            fmt:print(util::userColor, "\nGive name of password to delete\n");
+            fmt::print(util::userColor, "\nGive name of password to delete\n");
             std::string nameToDelete;
             std::cin.clear();
             std::cin.ignore();
@@ -264,6 +268,8 @@ void PasswordPass::deletePassword() {
             break;
         case 4: { // by cat then name
             if (getAllCategories().size() < 1) { fmt::print(util::error, "\n0 categories were found\n"); break; }
+            if (passwordList.empty()) { fmt::print(util::error, "Password List Is Empty."); break; }
+
             int indexToDelete = 1;
 
             fmt::print(util::userColor, "\nChoose category from list\n");
@@ -328,8 +334,8 @@ void PasswordPass::deletePasswordFromList(std::vector<std::string> fieldsOfDelet
             passwordList.at(j).getLogin() == fieldsOfDeletedVector.at(4)
             )
 
-        { // deleting in passwordList, // dodac jeszcze warning
-            //tu warning
+        { // deleting in passwordList
+            
             fmt::print(util::userColor, "\n\nAre you sure you want to delete this password? [Y,n]\n\n> ");
             char answer = inputAnswer('Y', 'n', false);
             if (answer == 'Y') {
@@ -418,6 +424,8 @@ void PasswordPass::searchPassword() {
             case 0:
                 break;
             case 1: {
+                if (getAllCategories().empty()) { fmt::print(util::error, "\nNo available categories\n"); option = 0; break; }
+                if (passwordList.empty()) { fmt::print(util::error, "\nNo passwords\n"); option = 0; break; }
                 std::string category;
                 fmt::print(util::userColor, "\nPlease provide me with a category for password to be founded in\n\n> ");
                 std::cin >> category;
@@ -431,6 +439,7 @@ void PasswordPass::searchPassword() {
 
             }
             case 2: {
+                if (passwordList.empty()) { fmt::print(util::error, "\nNo passwords\n"); option = 0; break; }
                 std::string name;
                 fmt::print(util::userColor, "\nPlease provide me with a name for password to be founded\n\n> ");
                 std::cin >> name;
@@ -445,6 +454,8 @@ void PasswordPass::searchPassword() {
                 break;
             }
             case 3: {
+                if (passwordList.empty()) { fmt::print(util::error, "\nNo passwords\n"); option = 0; break; }
+
                 std::string login;
                 fmt::print(util::userColor, "\nPlease provide me with a login for password to be founded in\n\n> ");
                 std::cin >> login;
@@ -460,6 +471,8 @@ void PasswordPass::searchPassword() {
                 break;
             }
             case 4: {
+                if (passwordList.empty()) { fmt::print(util::error, "\nNo passwords\n"); option = 0; break; }
+
                 std::string webSite;
                 fmt::print(util::userColor, "\nPlease provide me with a website for password to be founded in\n\n> ");
                 std::cin >> webSite;
@@ -475,6 +488,8 @@ void PasswordPass::searchPassword() {
                 break;
             }
             case 5: {
+                if (passwordList.empty()) { fmt::print(util::error, "\nNo passwords\n"); option = 0; break; }
+
                 fmt::print(util::userColor, "\nPlease provide me with an information for every field\nIf you don`t want this field to be included place '-'\n ");
                 std::string category = inputType("category");
                 std::string name = inputType("name");
@@ -707,7 +722,7 @@ void PasswordPass::editPassword() {
 
             }
                   break;
-            defalt:
+            default:
                 break;
         }
     } while (option != 0);
@@ -782,8 +797,9 @@ void PasswordPass::addPassword() {
             break;
         case 1: {
 
-            if (getAllCategories().size() < 1) {
-                fmt::print(util::userColor, "\nThere are no categories, please create a category first, than proceed\n");
+            if (getAllCategories().empty()) {
+                fmt::print(util::error, "\nThere are no categories, please create a category first, than proceed\n");
+                option = 0;
                 break;
             }
 
@@ -819,10 +835,16 @@ void PasswordPass::addPassword() {
         }
               break;
         case 2: {
+            std::vector<std::string> categories = getAllCategories();
+
+            if (categories.empty()) {
+                fmt::print(util::error, "\nThere are no categories, please create a category first, than proceed\n");
+                option = 0;
+                break;
+            }
 
             // {name, category, website, login}
             std::vector<std::string> data = templatePassword();
-            std::vector<std::string> categories = getAllCategories();
 
             showList(categories);
             int choice = rangeAnswer(1, categories.size());
@@ -1047,6 +1069,11 @@ void PasswordPass::showPasswords() {
     }
 }
 
+void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass* ps) {
+    /*if (dirt.empty()) { ps->setPasswordList(); }*/
+    ps->setPasswordList(passwordList(dirt, delimite));
+}
+
 PasswordPass* PasswordPass::createAccount() {
     fmt::print(util::userColor, "\nYou`re in process of creating an account for Password managing\n");
     std::string fileName;
@@ -1100,7 +1127,9 @@ PasswordPass* PasswordPass::createAccount() {
 
     encryptFile(path.string(), password);
 
-    return new PasswordPass(path.string(), password);
+    PasswordPass* ppass = loginWithPath(path.string(), password);
+
+    return ppass;
 
 
 }
@@ -1109,16 +1138,14 @@ void setOthers(const std::vector<std::string> vec, PasswordPass* ps) {
     ps->setOther(vec);
 }
 
-void setPassList(const std::vector<std::string> dirt, const char delimite, PasswordPass* ps) {
-    ps->setPasswordList(passwordList(dirt, delimite));
-}
+
 
 PasswordPass* PasswordPass::loginIntoAccount() {
     fmt::print(util::userColor,"\nWould you like to pick a file from current folder or give a path? [F/P]\n\n> ");
     char input = inputAnswer('F', 'P', false);
     std::string path;
     if (input == 'P') {
-        return PasswordPass::loginWithPath("");
+        return PasswordPass::loginWithPath("", "");
     }
 
     return PasswordPass::loginFromFolder();
@@ -1131,7 +1158,7 @@ PasswordPass* PasswordPass::loginFromFolder() {
         answer = inputAnswer('C', 'P', false);
 
         if (answer == 'P') {
-            return PasswordPass::loginWithPath("");
+            return PasswordPass::loginWithPath("", "");
         }
         
         if (std::filesystem::create_directory(util::secretFolder)) {
@@ -1157,10 +1184,10 @@ PasswordPass* PasswordPass::loginFromFolder() {
     std::filesystem::path pathToFile = util::secretFolder;
     pathToFile.append(currentOptions.at(option-1));
 
-    return PasswordPass::loginWithPath(pathToFile.string());
+    return PasswordPass::loginWithPath(pathToFile.string(), "");
 }
 
-PasswordPass* PasswordPass::loginWithPath(const std::string autoPath) {
+PasswordPass* PasswordPass::loginWithPath(const std::string autoPath, const std::string &autoPass) {
     std::string path;
     if (autoPath.empty()) {
         fmt::print(util::userColor, "\nPlease provide me with a path to a file\n\n> ");
@@ -1175,8 +1202,14 @@ PasswordPass* PasswordPass::loginWithPath(const std::string autoPath) {
     
 
     std::string password;
-    fmt::print(util::userColor, "\nPlease provide me with a password to a file\n\n> ");
-    std::cin >> password;
+
+    if (autoPass.empty() || autoPass.length() < 1) {
+        fmt::print(util::userColor, "\nPlease provide me with a password to a file\n\n> ");
+        std::cin >> password;
+    }
+    else {
+        password = autoPass;
+    }
 
     bool dec = isDecrypted(path, password);
 
@@ -1197,7 +1230,7 @@ PasswordPass* PasswordPass::loginWithPath(const std::string autoPath) {
 
     fmt::print(util::userColor, "\n\n\n\n\n\nLoged successfully pleasant use\n");
 
-    if (others.size() == 4) { fmt::print(util::userColor, "\nLast login was {} may, {}:{}:{}\n", others.at(0), others.at(1), others.at(2), others.at(3)); }
+    if (others.size() == 4) { fmt::print(util::userColor, "\nLast login was {} june, {}:{}:{}\n", others.at(0), others.at(1), others.at(2), others.at(3)); }
 
     // day hour minute seconds
     std::vector<std::string> t = time();
@@ -1213,8 +1246,8 @@ PasswordPass* launch() {
     if (input == 'L') { 
         return PasswordPass::loginIntoAccount(); 
     }
-    PasswordPass::createAccount();
-    return nullptr;
+    
+    return PasswordPass::createAccount();
 
 }
 
